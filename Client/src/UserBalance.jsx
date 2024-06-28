@@ -1,0 +1,59 @@
+import Button from '@mui/material/Button';
+import { useState } from 'react';
+import axios from 'axios';
+import { NavLink } from 'react-router-dom';
+export default function UserBalance() {
+
+
+    let [user, setUser] = useState({ username: "" })
+    let name, value;
+
+    const handleInputs = (e) => {
+        e.preventDefault();
+        name = e.target.name;
+        value = e.target.value;
+
+        setUser({ ...user, [name]: value })
+    }
+
+    const submit = async (event) => {
+        event.preventDefault();
+        const { username } = user;
+        await axios.post("http://localhost:8000/balance", user)
+            .then(res => {
+                if (res.data === "Invalid") {
+                    alert("Invalid Username")
+                }
+                else {
+                    alert("Your current amount is: " + res.data)
+                }
+            })
+            .catch(err => console.log(err))
+
+        setUser(
+            { username: "" }
+        )
+    }
+
+
+    return (
+        <div className='container8'>
+            <h1>Welcome to Balance Enquiry page</h1>
+            <form onSubmit={submit}>
+                <div className="balinfo">
+                    <label for="exampleFormControlInput1" class="form-label">Enter Username:  </label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="name" name="username" class="form-control form2" id="exampleFormControlInput1" value={user.username} onChange={handleInputs} autoComplete="off" required />
+                </div>
+
+                <Button type="submit" variant="outlined" id="balbtn">Submit</Button>
+                <br />
+                <hr />
+            </form>
+
+            <Button variant="outlined" id="homebtn" href="/" style={{marginLeft:'0rem'}}>Logout</Button>
+            <br />
+            <NavLink to="/userdashboard" ><Button variant="outlined" id="homebtn" >Go to main dashboard</Button></NavLink>
+        </div>
+    )
+}

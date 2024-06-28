@@ -1,0 +1,223 @@
+.admdashboard{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-image:url('img19.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+.user-dashboard{
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-image:url('img19.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    overflow: hidden;
+}
+.container7{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    width: 70%;
+    margin: 20px auto;
+    background-color: rgba(255, 255, 255, 0.2); /* Semi-transparent background */
+    backdrop-filter: blur(10px); /* Blur effect */
+    -webkit-backdrop-filter: blur(10px); /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+    overflow-y: auto;
+    height: 95vh;
+    padding: 18px;
+}
+.accInfo1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+.dash-mainhead{
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: rgb(5, 37, 19);
+    margin-bottom: 30px;
+}
+#accbtn{
+    margin-left: 30px;
+    border-radius: 20px;
+    background-color: aliceblue;
+    color: black;
+    font-weight: bold;
+    font-size: medium;
+}
+#accbtn:hover{
+    scale: 1.1;
+    transition: all .3s linear;
+    background-color: aquamarine;
+}
+#homebtn{
+    margin-left:30px auto;
+    border-radius: 20px;
+    background-color: aliceblue;
+    color: black;
+    font-weight: bold;
+    font-size: medium;
+}
+#homebtn:hover{
+    scale: 1.2;
+    transition: all .3s linear;
+    background-color: rgb(197, 199, 241);
+}
+.container8{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color:rgba(215, 226, 202, 0.463);
+    padding: 30px;
+    margin:5rem auto;
+    width: 70%;
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.5), -5px -5px 5px rgba(222, 164, 164, 0.5);
+}
+.form2{
+    width: 20rem;
+    background-color: rgb(169, 171, 232);
+}
+.balinfo{
+    margin: 20px;
+}
+.form-label{
+    font-size: larger;
+    font-weight: bold;
+}
+#balbtn{
+    display:block;
+    margin: 10px auto;
+    border-radius: 20px;
+    background-color: aliceblue;
+    color: black;
+    font-weight: bold;
+    font-size: medium;
+}
+#balbtn:hover{
+    scale: 1.1;
+    transition: all .3s linear;
+    background-color: rgb(210, 237, 228);
+}
+
+.transhistory{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    background-color:rgba(215, 226, 202, 0.463);
+    padding: 30px;
+    margin:5rem auto;
+    width: 70%;
+    border: 2px solid black;
+    border-radius: 10px;
+    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.5), -5px -5px 5px rgba(222, 164, 164, 0.5);
+}
+#sub-btn{
+    display: block;
+    margin: 10px auto;
+    border-radius: 20px;
+    background-color: aliceblue;
+    color: black;
+    font-weight: bold;
+    font-size: medium;
+}
+.bodyimg{
+    height: 100%;
+    width: 100%;
+    z-index: -1;
+}
+
+.detail
+{
+    border: 2px solid black;
+    width: 70%;
+    margin: 40px auto;
+    border-radius: 5px;
+    background-color:rgba(215, 226, 202, 0.463);
+    box-shadow:5px 5px 5px rgba(0, 0, 0, 0.5), -5px -5px 5px rgba(222, 164, 164, 0.5);
+}
+.info{
+    margin: 10px;
+}
+
+/* Width of the scrollbar */
+::-webkit-scrollbar {
+    width: 12px; /* You can adjust the width here */
+}
+
+/* Track of the scrollbar */
+::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Color of the scrollbar track */
+}
+
+/* Handle of the scrollbar */
+::-webkit-scrollbar-thumb {
+    background: #888; /* Color of the scrollbar handle */
+    border-radius: 6px; /* Roundness of the handle edges */
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the scrollbar handle on hover */
+}
+
+
+@media (max-width: 768px) {
+    .admdashboard {
+        background-size: contain;
+        background-position: top;
+        background-repeat: repeat;
+    }
+    .container7 {
+        width: 90%;
+        margin: 20px auto; /* Center the container */
+        padding: 10px;
+    }
+    .accInfo1{
+        padding: 8px;
+    }
+    #accbtn{
+        margin-left: 10px;
+        border-radius: 10px;
+        background-color: aliceblue;
+        color: black;
+        font-weight: bold;
+        font-size: 12px;
+        padding: 1px;
+        width: 30px;
+    }
+    #homebtn{
+        border-radius: 10px;
+        background-color: aliceblue;
+        color: black;
+        font-weight: bold;
+        font-size: medium;
+    }
+    .container8{
+        width: 90%;
+    }
+    .form2{
+        width: 100%;
+    }
+    .form-label{
+        font-size: 15px;
+    }
+    .transhistory{
+        width: 90%;
+    }
+    .detail{
+        width: 90%;
+    }
+}

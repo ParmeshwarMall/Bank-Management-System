@@ -1,0 +1,38 @@
+body {
+	--fsAddBuffer: 22px;
+}
+[id='wallpaperdog_siderail_right'],
+[id='wallpaperdog_leaderboard_atf'],
+[id='wallpaperdog_siderail_left'],
+[id='wallpaperdog_download_mrec'],
+[id='wallpaperdog_siderail_right2'] {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-direction: column;
+	min-height: calc(var(--height) + var(--fsAddBuffer));
+	width: 100%;
+}
+[id='wallpaperdog_download_mrec'] {
+		--height: 280px;
+}
+[id='wallpaperdog_leaderboard_atf'] {
+		--height: 280px;
+}
+@media only screen and (min-width: 768px) {
+	[id='wallpaperdog_download_mrec'] {
+		--height: 280px;
+	}
+	[id='wallpaperdog_leaderboard_atf'] {
+		--height: 280px;
+	}
+	[id='wallpaperdog_siderail_left'] {
+		--height: 600px;
+	}
+	[id='wallpaperdog_siderail_right'] {
+		--height: 280px;
+	}
+	[id='wallpaperdog_siderail_right2'] {
+		--height: 280px;
+	}
+}

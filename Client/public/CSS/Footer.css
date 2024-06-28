@@ -1,0 +1,25 @@
+.footer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: black;
+    padding: 10px;
+    text-align: center;
+}
+.creater{
+    color: white;
+}
+.copyright{
+    color: white;
+}
+
+@media (max-width:768px)
+{
+    .creater{
+        font-size: 15px;
+    }
+    .copyright{
+        font-size: 10px;
+    }
+}
