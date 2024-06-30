@@ -141,19 +141,21 @@
     display: block;
     margin: 20px auto;
 }
-  .pass{
-    margin-left: 10vh;
-  }
+.pass{
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 .eye-icon3 {
     position: absolute;
-    right: 80px;
-    top: 60%;
-    transform: translateY(-50%);
+    right: 10px;
+  transform: translateY(-50%);
+  top: 50%;
     display: block;
     cursor: pointer;
     border: none;
-    background-color: white;
     height: auto;
+    background: none;
   }
   
   .eye-icon3 svg {
@@ -178,11 +180,8 @@
         background-size: contain;
         background-repeat: repeat;
     }
-    .pass{
-        margin-left: auto;
-    }
-    .eye-icon3{
+    /* .eye-icon3{
         right: 7px;
-    }
+    } */
 }
 

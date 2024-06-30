@@ -64,11 +64,10 @@ app.post("/", async (req, res) => {
       const isPassCrt = await bcrypt.compare(userpassword, userExist.password);
       if (isPassCrt) {
         res.send("exist");
-      }
-      else {
+      } else {
         res.send("Invalid Username or Password");
       }
-    } 
+    }
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -154,14 +153,19 @@ app.post("/form", async (req, res) => {
 });
 
 app.post("/balance", async (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      const amount = user.amount;
-      res.send(amount.toString());
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        const amount = user.amount;
+        res.send("Your current amount is: " + amount.toString());
+      } else {
+        res.send("Invalid Password");
+      }
     } else {
-      res.send("Invalid");
+      res.send("Invalid Username");
     }
   } catch (err) {
     res.status(500).send(err.message);
@@ -169,24 +173,29 @@ app.post("/balance", async (req, res) => {
 });
 
 app.post("/deposite", async (req, res) => {
-  const { amount, username } = req.body;
+  const { amount, username, password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      const newAmount = user.amount + Number(amount);
-      user.amount = newAmount;
-      const newTrans = new Transaction({
-        username,
-        amount,
-        mode: "Credit",
-        transdate: day + "/" + month + "/" + year,
-        transtime: hours + ":" + minutes + ":" + seconds,
-      });
-      await user.save();
-      await newTrans.save();
-      res.send(user.amount.toString());
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        const newAmount = user.amount + Number(amount);
+        user.amount = newAmount;
+        const newTrans = new Transaction({
+          username,
+          amount,
+          mode: "Credit",
+          transdate: day + "/" + month + "/" + year,
+          transtime: hours + ":" + minutes + ":" + seconds,
+        });
+        await user.save();
+        await newTrans.save();
+        res.send(user.amount.toString());
+      } else {
+        res.send("InvalidP");
+      }
     } else {
-      res.send("Invalid");
+      res.send("InvalidU");
     }
   } catch (err) {
     res.status(500).send(err.message);
@@ -194,27 +203,32 @@ app.post("/deposite", async (req, res) => {
 });
 
 app.post("/withdraw", async (req, res) => {
-  const { amount, username } = req.body;
+  const { amount, username, password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      if (user.amount >= amount) {
-        user.amount -= Number(amount);
-        const newTrans = new Transaction({
-          username,
-          amount,
-          mode: "Debit",
-          transdate: day + "/" + month + "/" + year,
-          transtime: hours + ":" + minutes + ":" + seconds,
-        });
-        await user.save();
-        await newTrans.save();
-        res.send(
-          "Withdraw Successfully. Your current amount is: " +
-            user.amount.toString()
-        );
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        if (user.amount >= amount) {
+          user.amount -= Number(amount);
+          const newTrans = new Transaction({
+            username,
+            amount,
+            mode: "Debit",
+            transdate: day + "/" + month + "/" + year,
+            transtime: hours + ":" + minutes + ":" + seconds,
+          });
+          await user.save();
+          await newTrans.save();
+          res.send(
+            "Withdraw Successfully. Your current amount is: " +
+              user.amount.toString()
+          );
+        } else {
+          res.send("Your balance is less than withdraw amount");
+        }
       } else {
-        res.send("Your balance is less than withdraw amount");
+        res.send("Invalid Password");
       }
     } else {
       res.send("Invalid Username");
@@ -225,35 +239,40 @@ app.post("/withdraw", async (req, res) => {
 });
 
 app.post("/transfer", async (req, res) => {
-  const { senusername, recusername, amount } = req.body;
+  const { senusername, password, recusername, amount } = req.body;
   try {
     const sen = await User.findOne({ username: senusername });
     const rec = await User.findOne({ username: recusername });
     if (sen && rec) {
-      if (sen.amount >= amount) {
-        sen.amount -= Number(amount);
-        rec.amount += Number(amount);
-        const senNewTrans = new Transaction({
-          username: senusername,
-          amount,
-          mode: "Debit",
-          transdate: day + "/" + month + "/" + year,
-          transtime: hours + ":" + minutes + ":" + seconds,
-        });
-        const recNewTrans = new Transaction({
-          username: recusername,
-          amount,
-          mode: "Credit",
-          transdate: day + "/" + month + "/" + year,
-          transtime: hours + ":" + minutes + ":" + seconds,
-        });
-        await sen.save();
-        await rec.save();
-        await senNewTrans.save();
-        await recNewTrans.save();
-        res.send("Money transfer successfully");
+      const isPassCrt = await bcrypt.compare(password, sen.password);
+      if (isPassCrt) {
+        if (sen.amount >= amount) {
+          sen.amount -= Number(amount);
+          rec.amount += Number(amount);
+          const senNewTrans = new Transaction({
+            username: senusername,
+            amount,
+            mode: "Debit",
+            transdate: day + "/" + month + "/" + year,
+            transtime: hours + ":" + minutes + ":" + seconds,
+          });
+          const recNewTrans = new Transaction({
+            username: recusername,
+            amount,
+            mode: "Credit",
+            transdate: day + "/" + month + "/" + year,
+            transtime: hours + ":" + minutes + ":" + seconds,
+          });
+          await sen.save();
+          await rec.save();
+          await senNewTrans.save();
+          await recNewTrans.save();
+          res.send("Money transfer successfully");
+        } else {
+          res.send("Your current balance is low to complete this transaction");
+        }
       } else {
-        res.send("Your current balance is low to complete this transaction");
+        res.send("Invalid Password");
       }
     } else {
       res.send("Invalid Username");
@@ -264,13 +283,19 @@ app.post("/transfer", async (req, res) => {
 });
 
 app.post("/delete", async (req, res) => {
-  const { username } = req.body;
+  const { username,password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      await user.deleteOne();
-      await Transaction.deleteMany({ username: username });
-      res.send("Account delete successfully");
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        await user.deleteOne();
+        await Transaction.deleteMany({ username: username });
+        res.send("Account delete successfully");
+      }
+      else{
+        res.send("Invalid Password");
+      }
     } else {
       res.send("Invalid Username");
     }
@@ -280,39 +305,45 @@ app.post("/delete", async (req, res) => {
 });
 
 app.post("/transaction", async (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
   try {
-    const user = await Transaction.find({ username: username });
-    if (user == "") {
-      res.send("Invalid");
+    const user = await User.findOne({ username: username });
+    if (user) {
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        const transactions = await Transaction.find({ username: username });
+        res.send(transactions);
+      } else {
+        res.send("InvalidP");
+      }
     } else {
-      res.send(user);
+      res.send("InvalidU");
     }
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
 
-app.post("/usertransaction", async (req, res) => {
-  const { username } = req.body;
-  try {
-    const user = await Transaction.find({ username: username });
-    if (user == "") {
-      res.send("Invalid");
-    } else {
-      res.send(user);
-    }
-  } catch (err) {
-    res.status(500).send(err.message);
-  }
-});
+// app.post("/usertransaction", async (req, res) => {
+//   const { username } = req.body;
+//   try {
+//     const user = await Transaction.find({ username: username });
+//     if (user == "") {
+//       res.send("Invalid");
+//     } else {
+//       res.send(user);
+//     }
+//   } catch (err) {
+//     res.status(500).send(err.message);
+//   }
+// });
 
 app.post("/passchg", async (req, res) => {
   const { username, password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      user.password = await bcrypt.hash(password,12);
+      user.password = await bcrypt.hash(password, 12);
       await user.save();
       res.send("Password change successfully!");
     } else {
@@ -324,13 +355,18 @@ app.post("/passchg", async (req, res) => {
 });
 
 app.post("/userdetail", async (req, res) => {
-  const { username } = req.body;
+  const { username, password } = req.body;
   try {
     const user = await User.findOne({ username: username });
     if (user) {
-      res.send(user);
+      const isPassCrt = await bcrypt.compare(password, user.password);
+      if (isPassCrt) {
+        res.send(user);
+      } else {
+        res.send("InvalidP");
+      }
     } else {
-      res.send("Invalid");
+      res.send("InvalidU");
     }
   } catch (err) {
     res.status(500).send(err.message);

@@ -2,6 +2,7 @@ import Button from '@mui/material/Button';
 import { useState } from 'react';
 import axios from 'axios';
 import {NavLink} from 'react-router-dom'
+import {Eye,EyeOff} from 'lucide-react'
 
 export default function PasswordChange(){
 
@@ -38,6 +39,12 @@ export default function PasswordChange(){
         )
     }
 
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const handlePasswordVisibilityToggle = () => {
+        setPasswordVisible(!passwordVisible);
+    };
+
     return(
         <div className="container8">
             <h1 className='mainhead'>Welcome to Password Change Page</h1>
@@ -50,7 +57,12 @@ export default function PasswordChange(){
                 <div className="balinfo">
                     <label for="exampleFormControlInput1" class="form-label">Enter New Password:  </label>
                     &nbsp;&nbsp;&nbsp;&nbsp;
-                    <input type="password" name="password" class="form-control form2" id="exampleFormControlInput1" value={user.password} onChange={handleInputs} autoComplete="off" required/>
+                    <div className="pass">
+                    <input type={passwordVisible ? 'text' : 'password'} name="password" class="form-control form2" id="exampleFormControlInput1" value={user.password} onChange={handleInputs} autoComplete="off" required/>
+                    <button type="button" onClick={handlePasswordVisibilityToggle} className="eye-icon3 cursor-pointer">
+                        {passwordVisible ? <Eye/>:<EyeOff/>}
+                    </button>
+                    </div>
                 </div>
 
                 <Button type="submit" variant="outlined" id="balbtn">Submit</Button>

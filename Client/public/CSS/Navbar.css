@@ -56,13 +56,13 @@ body{
 }
 .container9{
     background-color: rgb(220, 235, 230);
-    padding: 0px;
+    padding: 20px;
     transition: transform 0.4s ease;
 }
 
 .container10{
     background-color: rgb(220, 235, 230);
-    padding: 10px;
+    padding: 20px;
     transition: transform 0.4s ease;
 }
 .serhead{
@@ -76,7 +76,7 @@ body{
 .container11{
     background-color:rgb(220, 235, 230);
     height: 90vh;
-    padding: 10px;
+    padding: 20px;
     transition: transform 0.4s ease;
 }
 

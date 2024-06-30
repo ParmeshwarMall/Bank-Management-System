@@ -7,7 +7,7 @@ export default function About() {
             <Navbar />
 
             <div className="container9">
-                <h1 abohead>Welcome to our project dedicated to revolutionizing the banking experience!</h1>
+                <h1 className='mainhead'>Welcome to our project dedicated to revolutionizing the banking experience!</h1>
                 <h6>At this bank, we understand the importance of financial services in everyone's lives. With the rapid advancements in technology and evolving customer expectations, we recognized the need for a modern banking solution that seamlessly integrates innovation with reliability.Our project aims to redefine the banking experience by leveraging cutting-edge technology to empower our customers and provide them with convenient, secure, and personalized financial services.</h6>
 
                 <h2>Our Mission:</h2>

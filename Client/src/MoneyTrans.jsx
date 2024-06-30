@@ -2,10 +2,11 @@ import Button from '@mui/material/Button';
 import { useState } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
+import {Eye,EyeOff} from 'lucide-react'
 
 export default function MoneyTrans() {
 
-    let [user, setUser] = useState({ senusername: "", recusername: "", amount: "" })
+    let [user, setUser] = useState({ senusername: "",password:"", recusername: "", amount: "" })
     let name, value;
 
     const handleInputs = (e) => {
@@ -18,7 +19,7 @@ export default function MoneyTrans() {
 
     const submit = async (e) => {
         e.preventDefault();
-        const { senusername, recusername, amount } = user;
+        const { senusername,password, recusername, amount } = user;
         await axios.post("http://localhost:8000/transfer", user)
             .then(res => {
                 alert(res.data)
@@ -26,19 +27,35 @@ export default function MoneyTrans() {
             .catch(err => console.log(err))
 
         setUser(
-            { senusername: "", recusername: "", amount: "" }
+            { senusername: "",password:"", recusername: "", amount: "" }
         )
 
     }
 
+    const [passwordVisible, setPasswordVisible] = useState(false);
+
+    const handlePasswordVisibilityToggle = () => {
+        setPasswordVisible(!passwordVisible);
+    };
+
     return (
         <div className="container8">
-            <h1 className='mainhead'>Welcome to Money Tranfer Page</h1>
+            <h1 className='mainhead'>Welcome to Money Transfer Page</h1>
             <form onSubmit={submit}>
                 <div className="balinfo">
                     <label for="exampleFormControlInput1" class="form-label">Enter Sender Username:  </label>
                     &nbsp;&nbsp;&nbsp;&nbsp;
                     <input type="name" name="senusername" class="form-control form2" id="exampleFormControlInput1" value={user.senusername} onChange={handleInputs} autoComplete="off" required />
+                </div>
+                <div className="balinfo">
+                    <label for="exampleFormControlInput1" class="form-label">Enter Sender Password:  </label>
+                    &nbsp;&nbsp;&nbsp;&nbsp;
+                    <div className="pass">
+                    <input type={passwordVisible ? 'text' : 'password'} name="password" class="form-control form2" id="exampleFormControlInput1" value={user.password} onChange={handleInputs} autoComplete="off" required />
+                    <button type="button" onClick={handlePasswordVisibilityToggle} className="eye-icon3 cursor-pointer">
+                        {passwordVisible ? <Eye/>:<EyeOff/>}
+                    </button>
+                    </div>
                 </div>
                 <div className="balinfo">
                     <label for="exampleFormControlInput1" class="form-label">Enter Receiver Username:  </label>

@@ -104,14 +104,14 @@ export default function DetailForm() {
                         <label for="exampleFormControlInput8" class="form-label">UserName: </label>
                         <input type="text" name="username" placeholder="Enter Username" class="form-control form1" id="exampleFormControlInput8" autoComplete="off" value={user.username} onChange={handleInputs} required />
                     </div>
-                    <div className="pass-input">
-                    <div className="mb-3 pass">
+                    <div className="mb-3">
                         <label for="exampleFormControlInput9" class="form-label">Password:  </label>
+                        <div className="pass">
                         <input type={passwordVisible ? 'text' : 'password'} name="password" placeholder="Enter Password" class="form-control form1" id="exampleFormControlInput9" autoComplete="off" value={user.password} onChange={handleInputs} required />
-                    </div>
-                    <button type="button" onClick={handlePasswordVisibilityToggle} className="eye-icon3 cursor-pointer">
+                        <button type="button" onClick={handlePasswordVisibilityToggle} className="eye-icon3 cursor-pointer">
                         {passwordVisible ? <Eye/>:<EyeOff/>}
                     </button>
+                        </div>
                     </div>
 
                     {/* <div class="mb-3 ">

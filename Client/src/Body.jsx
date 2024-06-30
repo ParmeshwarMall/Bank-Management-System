@@ -84,7 +84,7 @@ export default function Body() {
   return (
     <div className="main-body-cont">
       <div className="container1">
-        <h1 className="mainhead">Welcome To Bharat Bank</h1>
+        <h1 className="mainhead body-head">WELCOME TO <span className="bharat">BHARAT</span> BANK</h1>
       </div>
 
       <div className="login">
