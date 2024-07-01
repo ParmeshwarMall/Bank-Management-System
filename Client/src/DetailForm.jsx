@@ -75,11 +75,11 @@ export default function DetailForm() {
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput5" class="form-label">Contact No. </label>
-                        <input type="number" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput5" autoComplete="off" value={user.contact} onChange={handleInputs} required />
+                        <input type="tel" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput5"  pattern="\d{10}" maxlength="10" autoComplete="off" value={user.contact} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput6" class="form-label">Aadhaar No. </label>
-                        <input type="number" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput6" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
+                        <input type="text" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput6" maxlength="16" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput7" class="form-label">PAN No. </label>

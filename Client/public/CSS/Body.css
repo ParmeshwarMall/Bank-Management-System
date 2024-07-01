@@ -296,11 +296,10 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;
+  height: auto;
   cursor: pointer;
   border: none;
   background-color: white;
-  height: auto;
 }
 
 @media (max-width: 768px) {
@@ -364,5 +363,13 @@ a {
   }
   .login {
     margin-top: -6vh;
+  }
+  .eye-icon svg {
+    width: 20px; /* Adjust the size of the icon */
+    height: 20px;
+  }
+  .eye-icon2 svg {
+    width: 20px; /* Adjust the size of the icon */
+    height: 20px;
   }
 }

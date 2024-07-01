@@ -3,6 +3,7 @@ import axios from 'axios';
 import '../public/CSS/DetaiForm.css'
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import {Eye,EyeOff} from 'lucide-react'
 
 export default function userform() {
 
@@ -73,17 +74,16 @@ export default function userform() {
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">Contact No. </label>
-                        <input type="number" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput4" autoComplete="off" value={user.contact} onChange={handleInputs} required />
+                        <input type="number" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput4" maxlength="10" autoComplete="off" value={user.contact} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">Aadhaar No. </label>
-                        <input type="number" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput4" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
+                        <input type="number" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput4" maxlength="16" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">PAN No. </label>
                         <input type="number" name="pan" placeholder="Enter PAN no." class="form-control form1" id="exampleFormControlInput4" autoComplete="off" value={user.pan} onChange={handleInputs} />
                     </div>
-                    <br />
                     <div className="checkBox">
                         <h6 className='form-label'>Gender: </h6>
                         <div class="form-check">
@@ -99,18 +99,19 @@ export default function userform() {
                             </label>
                         </div>
                     </div>
-                    <br />
                     <div className="mb-3">
                         <label for="exampleFormControlInput5" class="form-label">UserName: </label>
                         <input type="text" name="username" placeholder="Enter Username" class="form-control form1" id="exampleFormControlInput5" autoComplete="off" value={user.username} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput6" class="form-label">Password:  </label>
+                        <div className="pass">
                         <input type={passwordVisible ? 'text' : 'password'} name="password" placeholder="Enter Password" class="form-control form1" id="exampleFormControlInput6" autoComplete="off" value={user.password} onChange={handleInputs} required />
-                    </div>
-                    <button type="button" onClick={handlePasswordVisibilityToggle} style={{ backgroundColor: "grey", borderRadius: '8px' }}>
-                        {passwordVisible ? 'Hide' : 'Show'} Password
+                        <button type="button" onClick={handlePasswordVisibilityToggle} className="eye-icon3 cursor-pointer">
+                        {passwordVisible ? <Eye/>:<EyeOff/>}
                     </button>
+                        </div>
+                    </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput10" class="form-label">Type of Account  </label>
                         <select class="form-select form1" aria-label="Default select example" id="exampleFormControlInput10" name="acctype" value={user.acctype} onChange={handleInputs} required>
