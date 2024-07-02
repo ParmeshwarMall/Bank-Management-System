@@ -20,7 +20,7 @@ export default function Withdraw(){
     const submit=async (e)=>{
         e.preventDefault();
         const {amount,username,password}=user;
-        await axios.post("http://localhost:8000/withdraw",user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/withdraw",user)
         .then(res => {
             alert(res.data)
         })

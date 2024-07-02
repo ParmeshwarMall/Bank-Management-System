@@ -24,7 +24,7 @@ export default function UpdateDetails() {
 
 
         const { ousername,nusername,password,email,contact,add } = user;
-        await axios.post("http://localhost:8000/updtdetail", user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/updtdetail", user)
             .then(res => {
                 if (res.data == "Invalid") {
                     alert("User not found");

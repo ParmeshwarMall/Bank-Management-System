@@ -23,7 +23,7 @@ export default function Transaction() {
     event.preventDefault();
     const { username, password } = user;
     await axios
-      .post("http://localhost:8000/transaction", user)
+      .post("https://bank-backend-ffwv.onrender.com/transaction", user)
       .then((res) => {
         if (res.data === "InvalidU") {
           alert("Invalid Username");
@@ -35,13 +35,12 @@ export default function Transaction() {
         }
       })
       .catch((err) => console.log(err));
-    setUser({ username: "", password: "" });
   };
 
   const send = async (e) => {
     e.preventDefault();
     await axios
-      .post("http://localhost:8000/email", user)
+      .post("https://bank-backend-ffwv.onrender.com/email", user)
       .then((res) => {
         alert(res.data);
       })

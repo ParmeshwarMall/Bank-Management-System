@@ -14,7 +14,6 @@ import Userdashboard from "./Userdashboard";
 import UserBalance from "./UserBalance";
 import UserTransaction from "./UserTransaction";
 import UserForm from "./userform";
-import PasswordCheck from "./PasswordCheck";
 import PasswordChange from "./PasswordChange";
 import UpdateDetails from "./UpdateDetails";
 import Detail from "./Detail";
@@ -43,7 +42,6 @@ function App() {
           <Route path="/transfer" element={<MoneyTrans />} />
           <Route path="/delete" element={<DeleteAcc />} />
           <Route path="/transaction" element={<Transaction />} />
-          <Route path="/passwordcheck" element={<PasswordCheck />} />
           <Route path="/detail" element={<Detail />} />
           <Route path="/updtdetail" element={<UpdateDetails />} />
         </Route>

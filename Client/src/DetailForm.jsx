@@ -25,7 +25,7 @@ export default function DetailForm() {
 
 
         const { name, fname, dob, email, contact, aadhaar, pan, username, password, acctype, amount, add } = user;
-        await axios.post("http://localhost:8000/form", user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/form", user)
             .then(res => {
                 if (res.data == "exist") {
                     alert("This username alerady exist. Please use another username")

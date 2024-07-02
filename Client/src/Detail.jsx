@@ -24,7 +24,7 @@ export default function Detail() {
     const submit = async (event) => {
         event.preventDefault();
         const { username,password } = user;
-        await axios.post("http://localhost:8000/userdetail", user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/userdetail", user)
             .then(res => {
                 if (res.data === "InvalidU") {
                     alert("Invalid Username")

@@ -21,7 +21,7 @@ export default function Deposite() {
     const submit=async (e)=>{
         e.preventDefault();
         const {amount,username,password}=user;
-        await axios.post("http://localhost:8000/deposite",user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/deposite",user)
         .then(res=>{
             if(res.data==="InvalidU")
             {

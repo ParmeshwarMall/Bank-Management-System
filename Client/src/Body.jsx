@@ -6,7 +6,7 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
-import { Eye,EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 
 import "../public/CSS/Body.css";
 
@@ -51,10 +51,9 @@ export default function Body() {
   const ussubmit = async (event) => {
     event.preventDefault();
     const { id, password, username, userpassword } = user;
-    await axios
-      .post("http://localhost:8000/", user)
+    await axios.post("https://bank-backend-ffwv.onrender.com/",user)
       .then((res) => {
-        if (res.data == "exist") {
+        if (res.data === "exist") {
           isUserLog = true;
           alert("Login Successfully");
           history("/userdashboard");
@@ -131,7 +130,7 @@ export default function Body() {
                   type="button"
                   onClick={handlePasswordVisibilityToggleAd}
                 >
-                  {adpasswordVisible ?<Eye/>:<EyeOff/>}
+                  {adpasswordVisible ? <Eye /> : <EyeOff />}
                 </button>
               </div>
             </div>
@@ -169,23 +168,23 @@ export default function Body() {
                 Password:{" "}
               </label>
               <div className="pass-input">
-              <input
-                type={userpasswordVisible ? "text" : "password"}
-                name="userpassword"
-                class="form-control"
-                id="userpassword"
-                autoComplete="off"
-                value={user.userpassword}
-                onChange={handleInputs}
-                required
-              />
-              <a href="/passchg">Forgot Password!</a>
-              <button
+                <input
+                  type={userpasswordVisible ? "text" : "password"}
+                  name="userpassword"
+                  class="form-control"
+                  id="userpassword"
+                  autoComplete="off"
+                  value={user.userpassword}
+                  onChange={handleInputs}
+                  required
+                />
+                <a href="/passchg">Forgot Password!</a>
+                <button
                   className="eye-icon2 cursor-pointer"
                   type="button"
                   onClick={handlePasswordVisibilityToggleUser}
                 >
-                  {userpasswordVisible ?<Eye/>:<EyeOff/>}
+                  {userpasswordVisible ? <Eye /> : <EyeOff />}
                 </button>
               </div>
             </div>

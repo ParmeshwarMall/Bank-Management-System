@@ -7,7 +7,6 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const nodemailer = require("nodemailer");
-const multer = require("multer");
 const bcrypt = require("bcrypt");
 
 main()
@@ -17,8 +16,11 @@ main()
   .catch((err) => console.log(err));
 
 async function main() {
-  await mongoose.connect("mongodb://127.0.0.1:27017/BankUserDetails");
+  await mongoose.connect("mongodb+srv://parmeshwarmall1920:3699@cluster0.uupe2xv.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0");
 }
+// async function main() {
+//   await mongoose.connect("mongodb://127.0.0.1:27017/BankUserDetails");
+// }
 
 const userSchema = mongoose.Schema({
   name: String,
@@ -65,13 +67,21 @@ app.post("/", async (req, res) => {
       if (isPassCrt) {
         res.send("exist");
       } else {
-        res.send("Invalid Username or Password");
+        res.send("Invalid Password");
       }
+    }
+    else
+    {
+      res.send("Invalid Username");
     }
   } catch (err) {
     res.status(500).send(err.message);
   }
 });
+
+app.get("/",(req,res)=>{
+  res.send("Hello")
+})
 
 app.post("/form", async (req, res) => {
   const {

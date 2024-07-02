@@ -20,7 +20,7 @@ export default function MoneyTrans() {
     const submit = async (e) => {
         e.preventDefault();
         const { senusername,password, recusername, amount } = user;
-        await axios.post("http://localhost:8000/transfer", user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/transfer", user)
             .then(res => {
                 alert(res.data)
             })

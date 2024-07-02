@@ -21,7 +21,7 @@ export default function UserBalance() {
     const submit = async (event) => {
         event.preventDefault();
         const {username,password}=user;
-        await axios.post("http://localhost:8000/balance",user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/balance",user)
         .then(res=>{
             alert(res.data)
         })

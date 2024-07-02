@@ -20,7 +20,7 @@ export default function DeleteAcc() {
     const submit = async (event) => {
         event.preventDefault();
         const { username,password } = user;
-        await axios.post("http://localhost:8000/delete", user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/delete", user)
         .then(res => {
             alert(res.data)
         })

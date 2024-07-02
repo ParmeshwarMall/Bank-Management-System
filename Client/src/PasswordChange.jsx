@@ -21,7 +21,7 @@ export default function PasswordChange(){
     const submit = async (event) => {
         event.preventDefault();
         const {username,password}=user;
-        await axios.post("http://localhost:8000/passchg",user)
+        await axios.post("https://bank-backend-ffwv.onrender.com/passchg",user)
         .then(res=>{
             alert(res.data);
             if(res.data==="Invalid username")
