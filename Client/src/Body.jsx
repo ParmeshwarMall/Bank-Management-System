@@ -7,6 +7,7 @@ import "aos/dist/aos.css";
 import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "react-toastify";
 
 import "../public/CSS/Body.css";
 
@@ -33,15 +34,24 @@ export default function Body() {
 
   const adsubmit = async (event) => {
     event.preventDefault();
+    const toastId = toast.loading("Logging in, please wait...", {
+      position: "top-center",
+    });
     try {
       const { id, password, username, userpassword } = user;
 
       if (id == "admin" && password == 1234) {
         isAdLog = true;
-        alert("Login successfully");
+        toast.dismiss(toastId);
+        toast.success("Login Successfully", {
+          position: "top-center",
+        });
         history("/admdashboard");
       } else {
-        alert("Invalid id or password");
+        toast.dismiss(toastId);
+        toast.error('Invalid Id or Password!', {
+          position: "top-center",
+          });
       }
     } catch (e) {
       console.log(e);
@@ -50,15 +60,25 @@ export default function Body() {
 
   const ussubmit = async (event) => {
     event.preventDefault();
+    const toastId = toast.loading("Logging in, please wait...", {
+      position: "top-center",
+    });
     const { id, password, username, userpassword } = user;
-    await axios.post("https://bank-backend-ffwv.onrender.com/",user)
+    await axios
+      .post("http://localhost:8000/", user)
       .then((res) => {
         if (res.data === "exist") {
           isUserLog = true;
-          alert("Login Successfully");
+          toast.dismiss(toastId);
+          toast.success("Login Successfully", {
+            position: "top-center",
+          });
           history("/userdashboard");
         } else {
-          alert(res.data);
+          toast.dismiss(toastId);
+          toast.error(res.data, {
+            position: "top-center",
+            });
         }
       })
       .catch((err) => console.log(err));

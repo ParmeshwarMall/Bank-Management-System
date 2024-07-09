@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from 'react-toastify';
 
 export default function Transaction() {
   let [user, setUser] = useState({ username: "", password: "" });
@@ -21,17 +22,30 @@ export default function Transaction() {
 
   const submit = async (event) => {
     event.preventDefault();
+    const toastId = toast.loading("Fetching transaction history...", {
+      position: "top-center",
+    });
     const { username, password } = user;
     await axios
-      .post("https://bank-backend-ffwv.onrender.com/transaction", user)
+      .post("http://localhost:8000/transaction", user)
       .then((res) => {
         if (res.data === "InvalidU") {
-          alert("Invalid Username");
+          toast.dismiss(toastId);
+          toast.info("Invalid Username!", {
+            position: "top-center",
+            });
         } else if (res.data === "InvalidP") {
-          alert("Invalid Password");
+          toast.dismiss(toastId);
+          toast.info("Invalid Password!", {
+            position: "top-center",
+            });
         } else {
           setTransactions(res.data);
           setStyle({ display: "block" });
+          toast.dismiss(toastId);
+          toast.success("Transaction history show below", {
+            position: "top-center",
+            });
         }
       })
       .catch((err) => console.log(err));
@@ -40,7 +54,7 @@ export default function Transaction() {
   const send = async (e) => {
     e.preventDefault();
     await axios
-      .post("https://bank-backend-ffwv.onrender.com/email", user)
+      .post("http://localhost:8000/email", user)
       .then((res) => {
         alert(res.data);
       })

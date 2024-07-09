@@ -4,6 +4,7 @@ import '../public/CSS/DetaiForm.css'
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function DetailForm() {
 
@@ -22,16 +23,24 @@ export default function DetailForm() {
 
     const handleSubmit = async (event) => {
         event.preventDefault();
-
+        const toastId = toast.loading("Waiting for confirmation...", {
+            position: "top-center",
+          });
 
         const { name, fname, dob, email, contact, aadhaar, pan, username, password, acctype, amount, add } = user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/form", user)
+        await axios.post("http://localhost:8000/form", user)
             .then(res => {
                 if (res.data == "exist") {
-                    alert("This username alerady exist. Please use another username")
+                    toast.dismiss(toastId);
+                    toast.warn("This username alerady exist. Please use another username", {
+                        position: "top-center",
+                        });
                 }
                 else {
-                    alert(res.data);
+                    toast.dismiss(toastId);
+                    toast.success(res.data, {
+                        position: "top-center",
+                        });
                     navigate('/admdashboard');
                     setUser(
                         { name: "", fname: "", dob: "", email: "", contact: "", aadhaar: "", pan: "", username: "", password: "", acctype: "", amount: "", add: "" }

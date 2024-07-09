@@ -22,6 +22,9 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRoute2 from "./ProtectedRoute2";
 
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 
 function App() {
@@ -29,6 +32,9 @@ function App() {
 
   return (
     <div>
+      <ToastContainer
+        theme="colored"
+      />
       <Routes>
         <Route path="/" element={<Combine />} />
         <Route path="/userform" element={<UserForm />} />

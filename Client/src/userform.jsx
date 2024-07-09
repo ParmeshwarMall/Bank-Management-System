@@ -4,6 +4,7 @@ import '../public/CSS/DetaiForm.css'
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function userform() {
 
@@ -23,14 +24,24 @@ export default function userform() {
     const handleSubmit = async (event) => {
         event.preventDefault();
 
+        const toastId = toast.loading("Waiting for confirmation...", {
+            position: "top-center",
+          });
+
         const { name, fname, dob, email, contact, aadhaar, pan, username, password, acctype, amount, add } = user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/form", user)
+        await axios.post("http://localhost:8000/form", user)
             .then(res => {
                 if (res.data == "exist") {
-                    alert("This username alerady exist. Please use another username")
+                    toast.dismiss(toastId);
+                    toast.info("This username already exist. Please use another username", {
+                        position: "top-center",
+                        });
                 }
                 else {
-                    alert(res.data);
+                    toast.dismiss(toastId);
+                    toast.info(res.data, {
+                        position: "top-center",
+                        });
                     navigate('/');
                     setUser(
                         { name: "", fname: "", dob: "", email: "", contact: "", aadhaar: "", pan: "", username: "", password: "", acctype: "", amount: 0, add: "" }
@@ -74,11 +85,11 @@ export default function userform() {
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">Contact No. </label>
-                        <input type="number" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput4" maxlength="10" autoComplete="off" value={user.contact} onChange={handleInputs} required />
+                        <input type="tel" name="contact" placeholder="Enter Contact no." class="form-control form1" id="exampleFormControlInput4" pattern="\d{10}" maxlength="10" autoComplete="off" value={user.contact} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">Aadhaar No. </label>
-                        <input type="number" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput4" maxlength="16" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
+                        <input type="text" name="aadhaar" placeholder="Enter Aadhaar no." class="form-control form1" id="exampleFormControlInput4" maxlength="16" autoComplete="off" value={user.aadhaar} onChange={handleInputs} required />
                     </div>
                     <div className="mb-3">
                         <label for="exampleFormControlInput4" class="form-label">PAN No. </label>

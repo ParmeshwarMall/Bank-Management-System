@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function Withdraw(){
 
@@ -19,10 +20,16 @@ export default function Withdraw(){
 
     const submit=async (e)=>{
         e.preventDefault();
+        const toastId = toast.loading("Waiting for confirmation...", {
+            position: "top-center",
+          });
         const {amount,username,password}=user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/withdraw",user)
+        await axios.post("http://localhost:8000/withdraw",user)
         .then(res => {
-            alert(res.data)
+            toast.dismiss(toastId);
+            toast.info(res.data, {
+                position: "top-center",
+                });
         })
         .catch(err => console.log(err))
 

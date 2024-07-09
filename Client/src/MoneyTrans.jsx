@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function MoneyTrans() {
 
@@ -19,10 +20,16 @@ export default function MoneyTrans() {
 
     const submit = async (e) => {
         e.preventDefault();
+        const toastId = toast.loading("Waiting for confirmation", {
+            position: "top-center",
+          });
         const { senusername,password, recusername, amount } = user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/transfer", user)
+        await axios.post("http://localhost:8000/transfer", user)
             .then(res => {
-                alert(res.data)
+                toast.dismiss(toastId);
+                toast.info(res.data, {
+                    position: "top-center",
+                    });
             })
             .catch(err => console.log(err))
 
@@ -69,7 +76,7 @@ export default function MoneyTrans() {
                 </div>
 
                 <Button type="submit" variant="outlined" id="balbtn" >Submit</Button>
-                <br /><br /><hr />
+                <hr />
             </form>
             <Button variant="outlined" id="homebtn" href="/" >Logout</Button>
             <br />

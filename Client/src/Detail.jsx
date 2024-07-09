@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { NavLink } from 'react-router-dom'
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function Detail() {
 
@@ -23,19 +24,32 @@ export default function Detail() {
 
     const submit = async (event) => {
         event.preventDefault();
+        const toastId = toast.loading("Fetching details, please wait...", {
+            position: "top-center",
+          });
         const { username,password } = user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/userdetail", user)
+        await axios.post("http://localhost:8000/userdetail", user)
             .then(res => {
                 if (res.data === "InvalidU") {
-                    alert("Invalid Username")
+                    toast.dismiss(toastId);
+                    toast.info("Invalid Username!", {
+                        position: "top-center",
+                        });
                 }
                 else if(res.data==="InvalidP")
                     {
-                        alert("Invalid Password");
+                        toast.dismiss(toastId);
+                        toast.info("Invalid Password!", {
+                            position: "top-center",
+                            });
                     }
                 else {
                     setDetails(res.data);
                     setStyle({ display: "block" });
+                    toast.dismiss(toastId);
+                    toast.success("Details show below", {
+                    position: "top-center",
+                    });
                 }
             })
             .catch(err => console.log(err))

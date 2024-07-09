@@ -3,6 +3,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import {NavLink} from 'react-router-dom'
 import {Eye,EyeOff} from 'lucide-react'
+import { toast } from 'react-toastify';
 
 export default function Balance() {
 
@@ -19,10 +20,16 @@ export default function Balance() {
 
     const submit = async (event) => {
         event.preventDefault();
+        const toastId = toast.loading("Fetching balance, please wait...", {
+            position: "top-center",
+          });
         const {username,password}=user;
-        await axios.post("https://bank-backend-ffwv.onrender.com/balance",user)
+        await axios.post("http://localhost:8000/balance",user)
         .then(res=>{
-            alert(res.data)
+            toast.dismiss(toastId);
+            toast.info(res.data, {
+                position: "top-center",
+                });
         })
         .catch(err=>console.log(err))
 
