@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { toast } from 'react-toastify';
 
-export default function UpdateDetails() {
+export default function UpdateDetails(props) {
 
     let [user, setUser] = useState({
         ousername: "", nusername: "", password: "", email: "", contact: "", add: ""
@@ -27,7 +27,7 @@ export default function UpdateDetails() {
           });
 
         const { ousername,nusername,password,email,contact,add } = user;
-        await axios.post("http://localhost:8000/updtdetail", user)
+        await axios.post(`${props.api}/updtdetail`, user)
             .then(res => {
                 if (res.data == "Invalid") {
                     toast.dismiss(toastId);

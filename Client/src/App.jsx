@@ -18,12 +18,15 @@ import PasswordChange from "./PasswordChange";
 import UpdateDetails from "./UpdateDetails";
 import Detail from "./Detail";
 import UserDetail from "./UserDetail";
+import Users from "./Users";
 import { Routes, Route, Navigate } from 'react-router-dom';
 import ProtectedRoute from "./ProtectedRoute";
 import ProtectedRoute2 from "./ProtectedRoute2";
 
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+const api="https://bank-backend-ffwv.onrender.com";
 
 
 
@@ -36,27 +39,28 @@ function App() {
         theme="colored"
       />
       <Routes>
-        <Route path="/" element={<Combine />} />
-        <Route path="/userform" element={<UserForm />} />
-        <Route path="/passchg" element={<PasswordChange />} />
+        <Route path="/" element={<Combine api={api}/>} />
+        <Route path="/userform" element={<UserForm api={api}/>} />
+        <Route path="/passchg" element={<PasswordChange api={api}/>} />
         <Route element={<ProtectedRoute />}>
           <Route path="/admdashboard" element={<Admdashboard />} />
-          <Route path="/form" element={<DetailForm />} />
-          <Route path="/balance" element={<Balance />} />
-          <Route path="/deposite" element={<Deposite />} />
-          <Route path="/withdraw" element={<Withdraw />} />
-          <Route path="/transfer" element={<MoneyTrans />} />
-          <Route path="/delete" element={<DeleteAcc />} />
-          <Route path="/transaction" element={<Transaction />} />
-          <Route path="/detail" element={<Detail />} />
-          <Route path="/updtdetail" element={<UpdateDetails />} />
+          <Route path="/form" element={<DetailForm api={api}/>} />
+          <Route path="/balance" element={<Balance api={api}/>} />
+          <Route path="/deposite" element={<Deposite api={api}/>} />
+          <Route path="/withdraw" element={<Withdraw api={api}/>} />
+          <Route path="/transfer" element={<MoneyTrans api={api}/>} />
+          <Route path="/delete" element={<DeleteAcc api={api}/>} />
+          <Route path="/transaction" element={<Transaction api={api}/>} />
+          <Route path="/detail" element={<Detail api={api}/>}/>
+          <Route path="/updtdetail" element={<UpdateDetails api={api}/>} />
+          <Route path='/allusers' element={<Users api={api}/>}/>
         </Route>
 
         <Route element={<ProtectedRoute2 />}>
           <Route path="/userdashboard" element={<Userdashboard />} />
-          <Route path="/userbalance" element={<UserBalance />} />
-          <Route path="/usertransaction" element={<UserTransaction />} />
-          <Route path="/userdetail" element={<UserDetail />} />
+          <Route path="/userbalance" element={<UserBalance api={api}/>} />
+          <Route path="/usertransaction" element={<UserTransaction api={api}/>} />
+          <Route path="/userdetail" element={<UserDetail api={api}/>} />
         </Route>
 
         <Route path="/about" element={<About />} />

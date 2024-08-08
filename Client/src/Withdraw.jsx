@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
-export default function Withdraw(){
+export default function Withdraw(props){
 
     let [user,setUser]=useState({amount:"",username:"",password:""})
     let name, value;
@@ -24,7 +24,7 @@ export default function Withdraw(){
             position: "top-center",
           });
         const {amount,username,password}=user;
-        await axios.post("http://localhost:8000/withdraw",user)
+        await axios.post(`${props.api}/withdraw`,user)
         .then(res => {
             toast.dismiss(toastId);
             toast.info(res.data, {

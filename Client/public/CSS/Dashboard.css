@@ -43,8 +43,11 @@
     display: flex;
     justify-content: center;
     text-align: center;
-    color: rgb(5, 37, 19);
+    color: rgb(8, 4, 0);
     margin-bottom: 30px;
+    font-weight: bolder;
+    font-size: 6vh;
+    font-family: 'Times New Roman', Times, serif;
 }
 #accbtn{
     margin-left: 30px;
@@ -152,6 +155,24 @@
     margin: 10px;
 }
 
+.detail-container{
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-around;
+    align-items: center;
+}
+.image-signature{
+    display: flex;
+    flex-direction: column;
+}
+.image-signature img{
+    margin-top: 10px;
+}
+
+.form-select{
+    border-radius: 10px;
+}
+
 /* Width of the scrollbar */
 ::-webkit-scrollbar {
     width: 12px; /* You can adjust the width here */
@@ -220,4 +241,36 @@
     .detail{
         width: 90%;
     }
+    .detail-container{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .detail-container ul{
+        margin-top: 20px;
+    }
 }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  
+  th, td {
+    padding: 8px 12px;
+    text-align: center;
+  }
+  
+  thead {
+    background-color: #f2f2f2;
+  }
+  
+  @media (max-width: 600px) {
+    th,td{
+        padding: 8px 5px;
+    }
+  
+    tr {
+      margin-bottom: 1rem;
+    }
+  }

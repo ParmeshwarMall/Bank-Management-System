@@ -3,9 +3,9 @@ import { useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
-export default function Transaction() {
+export default function Transaction(props) {
   let [user, setUser] = useState({ username: "", password: "" });
   let name, value;
 
@@ -27,25 +27,25 @@ export default function Transaction() {
     });
     const { username, password } = user;
     await axios
-      .post("http://localhost:8000/transaction", user)
+      .post(`${props.api}/transaction`, user)
       .then((res) => {
         if (res.data === "InvalidU") {
           toast.dismiss(toastId);
           toast.info("Invalid Username!", {
             position: "top-center",
-            });
+          });
         } else if (res.data === "InvalidP") {
           toast.dismiss(toastId);
           toast.info("Invalid Password!", {
             position: "top-center",
-            });
+          });
         } else {
           setTransactions(res.data);
           setStyle({ display: "block" });
           toast.dismiss(toastId);
           toast.success("Transaction history show below", {
             position: "top-center",
-            });
+          });
         }
       })
       .catch((err) => console.log(err));
@@ -53,10 +53,16 @@ export default function Transaction() {
 
   const send = async (e) => {
     e.preventDefault();
+    const toastId = toast.loading("Waiting for confirmation...", {
+      position: "top-center",
+    });
     await axios
-      .post("http://localhost:8000/email", user)
+      .post(`${props.api}/email`, user)
       .then((res) => {
-        alert(res.data);
+        toast.dismiss(toastId);
+        toast.success(res.data, {
+          position: "top-center",
+        });
       })
       .catch((err) => console.log(err));
   };
@@ -136,26 +142,28 @@ export default function Transaction() {
 
       <div className="transhistory" style={style}>
         <h2 className="mainhead">Transaction History</h2>
-        <table border="3" style={{ width: "90%", margin: "2vh auto" }}>
-          <thead>
-            <tr>
-              <th>Amount</th>
-              <th>Mode</th>
-              <th>Date</th>
-              <th>Time</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((transaction, index) => (
-              <tr key={index}>
-                <td>{transaction.amount}</td>
-                <td>{transaction.mode}</td>
-                <td>{transaction.transdate}</td>
-                <td>{transaction.transtime}</td>
+        <div style={{ width: "90%", margin: "2vh auto", overflowX: "auto" }}>
+          <table border="3" style={{ width: "100%", textAlign: "center" }}>
+            <thead>
+              <tr>
+                <th>Amount</th>
+                <th>Mode</th>
+                <th>Date</th>
+                <th>Time</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {transactions.map((transaction, index) => (
+                <tr key={index}>
+                  <td data-ldata="Amount">{transaction.amount}</td>
+                  <td data-label="Mode">{transaction.mode}</td>
+                  <td data-label="Date">{transaction.transdate}</td>
+                  <td data-label="Time">{transaction.transtime}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
         <br />
 
         <Button variant="outlined" id="sub-btn" type="button" onClick={send}>

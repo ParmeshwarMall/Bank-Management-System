@@ -3,7 +3,7 @@ import Navbar from './Navbar';
 
 export default function About() {
     return (
-        <div>
+        <>
             <Navbar />
 
             <div className="container9">
@@ -30,6 +30,6 @@ export default function About() {
                     <li><h6>Community Engagement: We are committed to supporting the communities we serve and contributing to their growth and development.</h6></li>
                 </ul>
             </div>
-        </div>
+        </>
     )
 }

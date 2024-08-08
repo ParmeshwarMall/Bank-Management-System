@@ -1,16 +1,16 @@
 import Button from "@mui/material/Button";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
-import { toast } from 'react-toastify';
+import { toast } from "react-toastify";
 
-export default function UserDetail() {
-  let [user, setUser] = useState({ username: "" });
+export default function Detail(props) {
+  let [user, setUser] = useState({ username: "", password: "" });
   let name, value;
 
   let [details, setDetails] = useState([]);
-  const [style, setStyle] = useState({ visibility: "hidden" });
+  const [style, setStyle] = useState({ display: "none" });
 
   const handleInputs = (e) => {
     e.preventDefault();
@@ -27,18 +27,18 @@ export default function UserDetail() {
     });
     const { username, password } = user;
     await axios
-      .post("http://localhost:8000/userdetail", user)
+      .post(`${props.api}/userdetail`, user)
       .then((res) => {
         if (res.data === "InvalidU") {
           toast.dismiss(toastId);
           toast.info("Invalid Username!", {
             position: "top-center",
-            });
+          });
         } else if (res.data === "InvalidP") {
           toast.dismiss(toastId);
           toast.info("Invalid Password!", {
             position: "top-center",
-            });
+          });
         } else {
           setDetails(res.data);
           setStyle({ display: "block" });
@@ -64,41 +64,47 @@ export default function UserDetail() {
       <div className="info">
         <h1 className="mainhead">Your Details!</h1>
         <br />
-        <ul>
-          <li>
-            <strong>Name: </strong> {obj.name}
-          </li>
-          <li>
-            <strong>Father Name: </strong> {obj.fname}
-          </li>
-          <li>
-            <strong>DOB: </strong> {obj.dob}
-          </li>
-          <li>
-            <strong>Email ID: </strong> {obj.email}
-          </li>
-          <li>
-            <strong>Contact No.: </strong> {obj.contact}
-          </li>
-          <li>
-            <strong>Aadhaar No.: </strong> {obj.aadhaar}
-          </li>
-          <li>
-            <strong>PAN No.: </strong> {obj.pan}
-          </li>
-          <li>
-            <strong>Username.: </strong> {obj.username}
-          </li>
-          <li>
-            <strong>Account Type: </strong> {obj.acctype}
-          </li>
-          <li>
-            <strong>Balance: </strong> {obj.amount}
-          </li>
-          <li>
-            <strong>Address: </strong> {obj.add}
-          </li>
-        </ul>
+        <div className="detail-container">
+            <div className="image-signature">
+                <img src={`http://localhost:8000/${obj.image}`} alt="Image" style={{height:"200px", width:"200px"}}/>
+                <img src={`http://localhost:8000/${obj.signature}`} alt="signature" style={{height:"40px", width:"200px"}}/>
+            </div>
+          <ul>
+            <li>
+              <strong>Name: </strong> {obj.name}
+            </li>
+            <li>
+              <strong>Father Name: </strong> {obj.fname}
+            </li>
+            <li>
+              <strong>DOB: </strong> {obj.dob}
+            </li>
+            <li>
+              <strong>Email ID: </strong> {obj.email}
+            </li>
+            <li>
+              <strong>Contact No.: </strong> {obj.contact}
+            </li>
+            <li>
+              <strong>Aadhaar No.: </strong> {obj.aadhaar}
+            </li>
+            <li>
+              <strong>PAN No.: </strong> {obj.pan}
+            </li>
+            <li>
+              <strong>Username.: </strong> {obj.username}
+            </li>
+            <li>
+              <strong>Account Type: </strong> {obj.acctype}
+            </li>
+            <li>
+              <strong>Balance: </strong> {obj.amount}
+            </li>
+            <li>
+              <strong>Address: </strong> {obj.add}
+            </li>
+          </ul>
+        </div>
       </div>
     );
   }
@@ -166,7 +172,7 @@ export default function UserDetail() {
           Logout
         </Button>
         <br />
-        <NavLink to="/userdashboard">
+        <NavLink to="/admdashboard">
           <Button variant="outlined" id="homebtn">
             Go to main dashboard
           </Button>

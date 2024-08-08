@@ -41,6 +41,10 @@ export default function Admdashboard(){
                     <NavLink to="/updtdetail"><Button variant="outlined" id="accbtn" >Click here</Button></NavLink>
                 </div>
                 <div className="accInfo1">
+                    <h3>Check All Users:</h3>
+                    <NavLink to="/allusers"><Button variant="outlined" id="accbtn" >Click here</Button></NavLink>
+                </div>
+                <div className="accInfo1">
                     <h3>For Delete Account :</h3>
                     <NavLink to="/delete"><Button variant="outlined" id="accbtn" >Click here</Button></NavLink>
                 </div>

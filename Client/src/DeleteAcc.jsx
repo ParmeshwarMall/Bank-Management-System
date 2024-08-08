@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
-export default function DeleteAcc() {
+export default function DeleteAcc(props) {
 
     let [user, setUser] = useState({ username: "",password:"" })
     let name, value;
@@ -24,7 +24,7 @@ export default function DeleteAcc() {
             position: "top-center",
           });
         const { username,password } = user;
-        await axios.post("http://localhost:8000/delete", user)
+        await axios.post(`${props.api}/delete`, user)
         .then(res => {
             toast.dismiss(toastId);
             toast.info(res.data, {

@@ -8,6 +8,10 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
+
 
 main()
   .then(() => {
@@ -32,6 +36,8 @@ const userSchema = mongoose.Schema({
   pan: String,
   username: String,
   password: String,
+  image:String,
+  signature:String,
   acctype: String,
   amount: Number,
   add: String,
@@ -44,6 +50,21 @@ const userTrans = mongoose.Schema({
   transdate: String,
   transtime: String,
 });
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/');
+  },
+  filename: function (req, file, cb) {
+    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+    cb(null, uniqueSuffix + '-' + file.originalname);
+  }
+});
+
+const upload = multer({ storage: storage });
+
 
 const User = mongoose.model("users", userSchema);
 const Transaction = mongoose.model("transactions", userTrans);
@@ -79,11 +100,11 @@ app.post("/", async (req, res) => {
   }
 });
 
-app.get("/",(req,res)=>{
-  res.send("Hello")
-})
+// app.get("/",(req,res)=>{
+//   res.send("Hello")
+// })
 
-app.post("/form", async (req, res) => {
+app.post("/form",upload.fields([{ name: 'image', maxCount: 1 }, { name: 'signature', maxCount: 1 }]), async (req, res) => {
   const {
     name,
     fname,
@@ -98,6 +119,7 @@ app.post("/form", async (req, res) => {
     amount,
     add,
   } = req.body;
+
   try {
     const userExist = await User.findOne({ username: username });
     if (userExist) {
@@ -114,6 +136,8 @@ app.post("/form", async (req, res) => {
         pan,
         username,
         password: hashPass,
+        image: req.files.image[0].path,
+        signature: req.files.signature[0].path, 
         acctype,
         amount,
         add,
@@ -334,19 +358,6 @@ app.post("/transaction", async (req, res) => {
   }
 });
 
-// app.post("/usertransaction", async (req, res) => {
-//   const { username } = req.body;
-//   try {
-//     const user = await Transaction.find({ username: username });
-//     if (user == "") {
-//       res.send("Invalid");
-//     } else {
-//       res.send(user);
-//     }
-//   } catch (err) {
-//     res.status(500).send(err.message);
-//   }
-// });
 
 app.post("/passchg", async (req, res) => {
   const { username, password } = req.body;
@@ -460,10 +471,18 @@ app.post("/email", async (req, res) => {
 
     res.send("Email send successfully");
   }
-
   main().catch(console.error);
 });
 
+app.get('/allusers', async (req, res) => {
+  try {
+    const users = await User.find();
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
 app.listen(port, () => {
-  console.log("Server start");
+  console.log(`Server start on port ${port}`);
 });

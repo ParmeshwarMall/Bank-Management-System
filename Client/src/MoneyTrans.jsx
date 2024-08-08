@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
-export default function MoneyTrans() {
+export default function MoneyTrans(props) {
 
     let [user, setUser] = useState({ senusername: "",password:"", recusername: "", amount: "" })
     let name, value;
@@ -24,7 +24,7 @@ export default function MoneyTrans() {
             position: "top-center",
           });
         const { senusername,password, recusername, amount } = user;
-        await axios.post("http://localhost:8000/transfer", user)
+        await axios.post(`${props.api}/transfer`, user)
             .then(res => {
                 toast.dismiss(toastId);
                 toast.info(res.data, {

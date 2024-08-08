@@ -6,11 +6,11 @@ import Map from './Map';
 
 
 
-export default function Combine() {
+export default function Combine(props) {
     return (
         <div>
             <Navbar />
-            <Body />
+            <Body api={props.api}/>
             <Map/>
             <Footer />
         </div>

@@ -5,7 +5,7 @@ import { NavLink } from 'react-router-dom';
 import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
-export default function UserBalance() {
+export default function UserBalance(props) {
 
 
     let [user, setUser] = useState({ username: "",password:""})
@@ -25,7 +25,7 @@ export default function UserBalance() {
             position: "top-center",
           });
         const {username,password}=user;
-        await axios.post("http://localhost:8000/balance",user)
+        await axios.post(`${props.api}/balance`,user)
         .then(res=>{
             toast.dismiss(toastId);
             toast.info(res.data, {

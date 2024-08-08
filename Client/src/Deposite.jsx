@@ -6,7 +6,7 @@ import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
 
-export default function Deposite() {
+export default function Deposite(props) {
 
     let [user,setUser]=useState({amount:"",username:"",password:""})
     let name, value;
@@ -25,7 +25,7 @@ export default function Deposite() {
             position: "top-center",
           });
         const {amount,username,password}=user;
-        await axios.post("http://localhost:8000/deposite",user)
+        await axios.post(`${props.api}/deposite`,user)
         .then(res=>{
             if(res.data==="InvalidU")
             {

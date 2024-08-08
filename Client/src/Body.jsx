@@ -13,7 +13,7 @@ import "../public/CSS/Body.css";
 
 let isAdLog = false;
 let isUserLog = false;
-export default function Body() {
+export default function Body(props) {
   let [user, setUser] = useState({
     id: "",
     password: "",
@@ -65,7 +65,7 @@ export default function Body() {
     });
     const { id, password, username, userpassword } = user;
     await axios
-      .post("http://localhost:8000/", user)
+      .post(`${props.api}/`, user)
       .then((res) => {
         if (res.data === "exist") {
           isUserLog = true;

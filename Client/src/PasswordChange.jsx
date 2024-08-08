@@ -1,11 +1,10 @@
 import Button from '@mui/material/Button';
 import { useState } from 'react';
 import axios from 'axios';
-import {NavLink} from 'react-router-dom'
 import {Eye,EyeOff} from 'lucide-react'
 import { toast } from 'react-toastify';
 
-export default function PasswordChange(){
+export default function PasswordChange(props){
 
     let [user,setUser]=useState({username:"",password:""})
     let name, value;
@@ -18,14 +17,13 @@ export default function PasswordChange(){
         setUser({ ...user, [name]: value })
     }
 
-    let isChgSucc=false;
     const submit = async (event) => {
         event.preventDefault();
         const toastId = toast.loading("Waiting for confirmation...", {
             position: "top-center",
           });
         const {username,password}=user;
-        await axios.post("http://localhost:8000/passchg",user)
+        await axios.post(`${props.api}/passchg`,user)
         .then(res=>{
             toast.dismiss(toastId);
             toast.info(res.data, {
