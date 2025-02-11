@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { NavLink } from "react-router-dom";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import ReCAPTCHA from "react-google-recaptcha";
 
 import "../../public/CSS/Body.css";
 
@@ -63,10 +64,12 @@ export default function Body(props) {
     const toastId = toast.loading("Logging in, please wait...", {
       position: "top-center",
     });
-  
+
     try {
-      const res = await axios.post(`${props.api}/`, user, { withCredentials: true });
-      
+      const res = await axios.post(`${props.api}/`, user, {
+        withCredentials: true,
+      });
+
       toast.dismiss(toastId);
       if (res.data === "exist") {
         isUserLog = true;
@@ -81,7 +84,6 @@ export default function Body(props) {
       console.log(err);
     }
   };
-  
 
   useEffect(() => {
     AOS.init({
@@ -98,6 +100,9 @@ export default function Body(props) {
   const handlePasswordVisibilityToggleUser = () => {
     setUserPasswordVisible(!userpasswordVisible);
   };
+
+  const [capVal1, setCapVal1] = useState(null);
+  const [capVal2, setCapVal2] = useState(null);
 
   return (
     <div className="main-body-cont">
@@ -153,7 +158,14 @@ export default function Body(props) {
                 </button>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary">
+            <div className="recaptcha-container">
+              <ReCAPTCHA
+                sitekey="6LeIxdAqAAAAAL7KZ-w6vRReOl-mFlmGkcybGDIS"
+                onChange={(val) => setCapVal1(val)}
+              />
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary" disabled={!capVal1}>
               Login
             </button>
           </form>
@@ -207,7 +219,14 @@ export default function Body(props) {
                 </button>
               </div>
             </div>
-            <button type="submit" class="btn btn-primary">
+            <div className="recaptcha-container">
+              <ReCAPTCHA
+                sitekey="6LeIxdAqAAAAAL7KZ-w6vRReOl-mFlmGkcybGDIS"
+                onChange={(val) => setCapVal2(val)}
+              />
+            </div>
+            <br />
+            <button type="submit" class="btn btn-primary" disabled={!capVal2}>
               Login
             </button>
           </form>
