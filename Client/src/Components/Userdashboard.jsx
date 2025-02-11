@@ -38,12 +38,12 @@ export default function Userdashboard(props) {
         <div className="detail-container">
           <div className="image-signature">
             <img
-              src={`http://localhost:8000/${obj.image}`}
+              src={obj.image}
               alt="Image"
               style={{ height: "200px", width: "200px" }}
             />
             <img
-              src={`http://localhost:8000/${obj.signature}`}
+              src={obj.signature}
               alt="signature"
               style={{ height: "40px", width: "200px" }}
             />
