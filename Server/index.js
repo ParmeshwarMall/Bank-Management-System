@@ -20,9 +20,18 @@ const fs = require("fs");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 const cookieParser = require("cookie-parser");
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
 app.use(cookieParser());
 
-require('dotenv').config();
+require("dotenv").config();
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_APIKEY,
+  api_secret: process.env.CLOUDINARY_SECRETKEY,
+});
 
 const secretKey = process.env.SECRET_KEY;
 const mongoUrl1 = process.env.MONGO_URL1;
@@ -67,20 +76,6 @@ const userTrans = mongoose.Schema({
   transtime: String,
 });
 
-app.use("/uploads", express.static(path.join(__dirname, "uploads")));
-
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, "uploads/");
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
-});
-
-const upload = multer({ storage: storage });
-
 const User = mongoose.model("users", userSchema);
 const Transaction = mongoose.model("transactions", userTrans);
 
@@ -98,15 +93,15 @@ const verifyToken = async (req, res, next) => {
   const token = await req.cookies.token;
 
   if (!token) {
-    return res.status(403).send('Token is required');
+    return res.status(403).send("Token is required");
   }
 
   try {
-    const decoded = jwt.verify(token, secretKey); 
+    const decoded = jwt.verify(token, secretKey);
     req.user = decoded;
     next();
   } catch (err) {
-    return res.status(401).send('Invalid token');
+    return res.status(401).send("Invalid token");
   }
 };
 
@@ -122,10 +117,10 @@ app.post("/", async (req, res) => {
     const isPassCrt = await bcrypt.compare(userpassword, userExist.password);
     if (isPassCrt) {
       const token = jwt.sign({ username }, secretKey, { expiresIn: "1h" });
-      res.cookie('token', token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: true, // true if using HTTPS
-        sameSite: 'None', // Required for cross-origin cookies
+        sameSite: "None", // Required for cross-origin cookies
       });
       return res.send("exist");
     } else {
@@ -137,94 +132,133 @@ app.post("/", async (req, res) => {
   }
 });
 
+const upload = multer({ storage: multer.memoryStorage() });
+const uploadToCloudinary = (fileBuffer, folderName) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      { folder: folderName },
+      (error, result) => {
+        if (error) reject(error);
+        else resolve(result.secure_url);
+      }
+    );
+    streamifier.createReadStream(fileBuffer).pipe(stream);
+  });
+};
+
 app.post(
   "/form",
-  upload.fields([
-    { name: "image", maxCount: 1 },
-    { name: "signature", maxCount: 1 },
-  ]),
+  upload.fields([{ name: "image" }, { name: "signature" }]),
   async (req, res) => {
-    const {
-      name,
-      fname,
-      dob,
-      email,
-      contact,
-      aadhaar,
-      pan,
-      username,
-      password,
-      acctype,
-      amount,
-      add,
-    } = req.body;
-
     try {
-      const userExist = await User.findOne({ username: username });
-      if (userExist) {
-        res.send("exist");
-      } else {
-        const hashPass = await bcrypt.hash(password, 12);
-        const newUser = new User({
-          name,
-          fname,
-          dob,
-          email,
-          contact,
-          aadhaar,
-          pan,
-          username,
-          password: hashPass,
-          image: req.files.image[0].path,
-          signature: req.files.signature[0].path,
-          acctype,
-          amount,
-          add,
-        });
-        const newTrans = new Transaction({
-          username,
-          amount,
-          mode: "Credit",
-          transdate: day + "/" + month + "/" + year,
-          transtime: hours + ":" + minutes + ":" + seconds,
-        });
-        await newUser.save();
-        await newTrans.save();
+      const {
+        name,
+        fname,
+        dob,
+        email,
+        contact,
+        aadhaar,
+        pan,
+        username,
+        password,
+        acctype,
+        amount,
+        add,
+      } = req.body;
 
-        const transporter = nodemailer.createTransport({
-          service: "gmail",
-          secure: true,
-          port: 465,
-          auth: {
-            user: "parmeshwarmall1920@gmail.com",
-            pass: "omns gzzy ibch nhsl",
-          },
-        });
-        async function main() {
-          const info = await transporter.sendMail({
-            from: " <parmeshwarmall1920@gmail.com>",
-            to: email,
-            subject: "Welcome to Bharat Bank!",
-            html: `<h3>Dear ${name}</h3>
-                           <p>Thank you for choosing <strong>Bharat Bank</strong> for your banking needs. We're thrilled to welcome you to our community!</p>
-                           <p>Your new account has been successfully opened, and we're here to assist you every step of the way. Whether you have questions about your account, need assistance with banking services, or want to explore our range of products, our dedicated team is ready to help.</p>
-                           <p>If you haven't already, you'll soon receive a welcome packet with important information about your account. In the meantime, feel free to explore our online banking platform and familiarize yourself with the features available to you.</P>
-                           <br/>
-                           <p>Warm regards,<p/>
-                           <p>Parmeshwar Mall</p>
-                           <p>Bharat Bank</p>
-                           <p>7706811920</p>`,
-          });
-        }
-        main().catch(console.error);
-
-        res.send("Account Open Successfully");
+      if (!req.files || !req.files.image || !req.files.signature) {
+        return res
+          .status(400)
+          .json({ message: "Image and Signature are required" });
       }
+
+      const userExist = await User.findOne({ username });
+      if (userExist) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const hashPass = await bcrypt.hash(password, 12);
+
+      // Upload Image & Signature to Cloudinary
+      const imageUrl = await uploadToCloudinary(
+        req.files.image[0].buffer,
+        "BankManagementSystem_Image"
+      );
+      const signatureUrl = await uploadToCloudinary(
+        req.files.signature[0].buffer,
+        "BankManagementSystem_Image"
+      );
+
+      // Save User Data in MongoDB
+      const newUser = new User({
+        name,
+        fname,
+        dob,
+        email,
+        contact,
+        aadhaar,
+        pan,
+        username,
+        password: hashPass,
+        image: imageUrl,
+        signature: signatureUrl,
+        acctype,
+        amount,
+        add,
+      });
+
+      await newUser.save();
+
+      // Save Transaction Data
+      const now = new Date();
+      const formattedDate = now.toISOString().split("T")[0]; // YYYY-MM-DD
+      const formattedTime = now.toTimeString().split(" ")[0]; // HH:MM:SS
+
+      const newTrans = new Transaction({
+        username,
+        amount,
+        mode: "Credit",
+        transdate: formattedDate,
+        transtime: formattedTime,
+      });
+
+      await newTrans.save();
+
+      // Send Welcome Email
+      const transporter = nodemailer.createTransport({
+        service: "gmail",
+        secure: true,
+        port: 465,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASS,
+        },
+      });
+
+      await transporter.sendMail({
+        from: `"Bharat Bank" <${process.env.EMAIL_USER}>`,
+        to: email,
+        subject: "Welcome to Bharat Bank!",
+        html: `<h3>Dear ${name},</h3>
+             <p>Thank you for choosing <strong>Bharat Bank</strong>. Your account has been successfully created.</p>
+             <p>For any queries, contact our support team.</p>
+             <br/>
+             <p>Best Regards,</p>
+             <p>Bharat Bank Team</p>`,
+      });
+
+      res
+        .status(201)
+        .json({
+          message: "Account created successfully",
+        });
     } catch (err) {
-      res.status(500).send(err.message);
+      console.error("Error processing form submission:", err);
+      res.status(500).json({ message: "Internal Server Error" });
     }
   }
 );
+
 
 app.post("/balance", async (req, res) => {
   const { username, password } = req.body;
@@ -377,25 +411,26 @@ app.post("/delete", async (req, res) => {
   }
 });
 
-app.post("/transaction",async(req,res)=>{
-  const {username,password}=req.body;
+app.post("/transaction", async (req, res) => {
+  const { username, password } = req.body;
   try {
     const transaction = await Transaction.find({ username: username });
     if (transaction) {
-        res.send(transaction);
-      }
-    else {
+      res.send(transaction);
+    } else {
       res.send("InvalidU");
     }
   } catch (err) {
     res.status(500).send(err.message);
   }
-})
+});
 
 app.get("/usertransaction", verifyToken, async (req, res) => {
   try {
-      const transactions = await Transaction.find({ username: req.user.username });
-      res.send(transactions);
+    const transactions = await Transaction.find({
+      username: req.user.username,
+    });
+    res.send(transactions);
   } catch (err) {
     res.status(500).send(err.message);
   }
@@ -436,9 +471,7 @@ app.post("/userdetail", async (req, res) => {
   }
 });
 
-
 app.get("/detail", verifyToken, async (req, res) => {
-
   try {
     const user = await User.findOne({ username: req.user.username });
     res.send(user);
