@@ -66,8 +66,8 @@ export default function Detail(props) {
         <br />
         <div className="detail-container">
             <div className="image-signature">
-                <img src={`http://localhost:8000/${obj.image}`} alt="Image" style={{height:"200px", width:"200px"}}/>
-                <img src={`http://localhost:8000/${obj.signature}`} alt="signature" style={{height:"40px", width:"200px"}}/>
+                <img src={obj.image} alt="Image" style={{height:"200px", width:"200px"}}/>
+                <img src={obj.signature} alt="signature" style={{height:"40px", width:"200px"}}/>
             </div>
           <ul>
             <li>
