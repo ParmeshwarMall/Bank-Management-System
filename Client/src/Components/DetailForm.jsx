@@ -26,74 +26,87 @@ export default function DetailForm(props) {
 
   const handleInputs = (e) => {
     const { name, value, files } = e.target;
-    if (name === "image" || name === "signature") {
-      setUser({ ...user, [name]: files[0] });
+    if (files) {
+      setUser((prevUser) => ({
+        ...prevUser,
+        [name]: files[0], // Store file object
+      }));
     } else {
-      setUser({ ...user, [name]: value });
+      setUser((prevUser) => ({
+        ...prevUser,
+        [name]: value,
+      }));
     }
   };
 
-  const navigate = useNavigate();
+  const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const toastId = toast.loading("Waiting for confirmation...", {
+
+    // Ensure required fields are filled
+    if (!user.image || !user.signature) {
+      return toast.warn("Image and Signature are required", {
+        position: "top-center",
+      });
+    }
+
+    const toastId = toast.loading("Submitting your details...", {
       position: "top-center",
     });
 
+    // ✅ Create FormData for File Upload
     const formData = new FormData();
     Object.keys(user).forEach((key) => {
-      formData.append(key, user[key]);
+      if (user[key]) {
+        formData.append(key, user[key]);
+      }
     });
 
-    await axios
-      .post(`${props.api}/form`, formData, {
+    try {
+      const res = await axios.post(`${props.api}/form`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((res) => {
-        if (res.data == "exist") {
-          toast.dismiss(toastId);
-          toast.warn(
-            "This username alerady exist. Please use another username",
-            {
-              position: "top-center",
-            }
-          );
-        } else {
-          toast.dismiss(toastId);
-          toast.success(res.data, {
-            position: "top-center",
-          });
-          navigate("/admdashboard");
-          setUser({
-            name: "",
-            fname: "",
-            dob: "",
-            email: "",
-            contact: "",
-            aadhaar: "",
-            pan: "",
-            username: "",
-            password: "",
-            image: null,
-            signature: null,
-            acctype: "",
-            amount: "",
-            add: "",
-          });
-        }
-      })
-      .catch((err) => {
-        toast.dismiss(toastId);
-        toast.error(err, {
-          position: "top-center",
-        });
       });
-  };
 
-  const [passwordVisible, setPasswordVisible] = useState(false);
+      // ✅ Handle different responses properly
+      if (res.status === 201) {
+        toast.dismiss(toastId);
+        toast.success(res.data.message, { position: "top-center" });
+
+        // Reset form
+        setUser({
+          name: "",
+          fname: "",
+          dob: "",
+          email: "",
+          contact: "",
+          aadhaar: "",
+          pan: "",
+          username: "",
+          password: "",
+          acctype: "",
+          amount: "",
+          add: "",
+          image: null,
+          signature: null,
+        });
+
+      } else {
+        toast.dismiss(toastId);
+        toast.warn(res.data.message, { position: "top-center" });
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+
+      if (err.response && err.response.data.message) {
+        toast.error(err.response.data.message, { position: "top-center" });
+      } else {
+        toast.error("Server Error: " + err.message, { position: "top-center" });
+      }
+    }
+  };
 
   const handlePasswordVisibilityToggle = () => {
     setPasswordVisible(!passwordVisible);
@@ -294,6 +307,7 @@ export default function DetailForm(props) {
               type="file"
               id="exampleFormControlInput10"
               name="image"
+              accept="image/*"
               onChange={handleInputs}
               required
             />
@@ -308,6 +322,7 @@ export default function DetailForm(props) {
               type="file"
               id="exampleFormControlInput11"
               name="signature"
+              accept="image/*"
               onChange={handleInputs}
               required
             />
