@@ -1,7 +1,9 @@
 # Bank Management System 🏦
 
 ## Overview:
-The Bank Management System is a console-based (or web-based) application that allows users to manage bank accounts, perform transactions, and handle banking operations efficiently. This project simulates real-world banking features like account creation, deposits, withdrawals, transfers, and balance inquiries.
+The Bank Management System is a console-based (or web-based) application that allows users to manage bank accounts, perform transactions, and handle banking operations efficiently. This project simulates real-world banking features like account creation, deposits, withdrawals, transfers, and balance inquiries.  
+
+## Live Demo: https://bharat-bank.netlify.app/
 
 ## Features:  
 ✅ User authentication (Login & Registration)  
