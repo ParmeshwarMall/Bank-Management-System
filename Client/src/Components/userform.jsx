@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import Button from "@mui/material/Button";
 
 export default function userform(props) {
   let [user, setUser] = useState({
@@ -23,7 +24,7 @@ export default function userform(props) {
     amount: 0,
     add: "",
   });
-  
+
   const handleInputs = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" || name === "signature") {
@@ -37,66 +38,122 @@ export default function userform(props) {
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-    const toastId = toast.loading("Waiting for confirmation...", {
+
+    // Ensure required fields are filled
+    if (!user.image || !user.signature) {
+      return toast.warn("Image and Signature are required", {
+        position: "top-center",
+      });
+    }
+
+    const toastId = toast.loading("Submitting your details...", {
       position: "top-center",
     });
 
     const formData = new FormData();
     Object.keys(user).forEach((key) => {
-      formData.append(key, user[key]);
+      if (user[key]) {
+        formData.append(key, user[key]);
+      }
     });
 
-    await axios
-      .post(`${props.api}/form`, formData, {
+    try {
+      const res = await axios.post(`${props.api}/form`, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
-      })
-      .then((res) => {
-        if (res.data == "exist") {
-          toast.dismiss(toastId);
-          toast.warn(
-            "This username already exist. Please use another username",
-            {
-              position: "top-center",
-            }
-          );
-        } else {
-          toast.dismiss(toastId);
-          toast.success(res.data, {
-            position: "top-center",
-          });
-          navigate("/admdashboard");
-          setUser({
-            name: "",
-            fname: "",
-            dob: "",
-            email: "",
-            contact: "",
-            aadhaar: "",
-            pan: "",
-            username: "",
-            password: "",
-            image: null,
-            signature: null,
-            acctype: "",
-            amount: "",
-            add: "",
-          });
-        }
-      })
-      .catch((err) => {
-        toast.dismiss(toastId);
-        toast.error(err, {
-          position: "top-center",
-        });
       });
+
+      if (res.status === 201) {
+        toast.dismiss(toastId);
+        toast.success(res.data.message, { position: "top-center" });
+
+        // Reset form
+        setUser({
+          name: "",
+          fname: "",
+          dob: "",
+          email: "",
+          contact: "",
+          aadhaar: "",
+          pan: "",
+          username: "",
+          password: "",
+          acctype: "",
+          amount: "",
+          add: "",
+          image: null,
+          signature: null,
+        });
+
+        // Redirect to another page if needed
+        setTimeout(() => navigate("/"), 2000);
+      } else {
+        toast.dismiss(toastId);
+        toast.warn(res.data.message, { position: "top-center" });
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+
+      if (err.response && err.response.data.message) {
+        toast.error(err.response.data.message, { position: "top-center" });
+      } else {
+        toast.error("Server Error: " + err.message, { position: "top-center" });
+      }
+    }
   };
 
   const [passwordVisible, setPasswordVisible] = useState(false);
 
   const handlePasswordVisibilityToggle = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const [OTP, setOTP] = useState("");
+  const [isotpsend, setIsotpsend] = useState(false);
+  const [isVerify, setIsVerify] = useState(false);
+
+  const sendOtp = async () => {
+    const { email } = user;
+    if (!email) {
+      toast.error("Enter Email Id", { position: "top-center" });
+      return;
+    }
+    try {
+      const toastId = toast.loading("Sending OTP, please wait...", {
+        position: "top-center",
+      });
+
+      const response = await axios.post(`${props.api}/verifyemail`, { email });
+      setOTP(response.data.otp);
+      setIsotpsend(true);
+      if (response.status === 200) {
+        toast.update(toastId, {
+          render: "OTP sent successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      } else {
+        toast.update(toastId, {
+          render: response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error("Something went wrong!", { position: "top-center" });
+    }
+  };
+
+  const verifyOTP = () => {
+    if (user.otp == OTP) {
+      toast.success("Email Verification Success", { position: "top-center" });
+      setIsVerify(true);
+    } else {
+      toast.error("Invalid OTP", { position: "top-center" });
+    }
   };
 
   return (
@@ -168,9 +225,31 @@ export default function userform(props) {
               autoComplete="off"
               value={user.email}
               onChange={handleInputs}
+              disabled={isotpsend}
               required
             />
           </div>
+          {!isVerify && (
+            <div className="otp-container">
+              {isotpsend && (
+                <input
+                  className="otp-input"
+                  type="text"
+                  name="otp"
+                  value={user.otp}
+                  onChange={handleInputs}
+                  placeholder="Enter OTP"
+                />
+              )}
+              <Button
+                variant="contained"
+                className="otp-button"
+                onClick={isotpsend ? verifyOTP : sendOtp}
+              >
+                {isotpsend ? "Verify OTP" : "Verify Email ID"}
+              </Button>
+            </div>
+          )}
           <div className="mb-3">
             <label for="exampleFormControlInput5" class="form-label">
               Contact No.{" "}
@@ -370,9 +449,14 @@ export default function userform(props) {
             />
           </div>
 
-          <button type="submit" class="btn btn-primary subBtn">
+          <button
+            type="submit"
+            class="btn btn-primary subBtn"
+            disabled={!isVerify}
+          >
             Submit
           </button>
+          {!isVerify && <p>Verify email to enable submit button</p>}
         </form>
       </div>
     </div>
