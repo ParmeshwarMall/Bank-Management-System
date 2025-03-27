@@ -4,17 +4,20 @@ import "../../public/CSS/Dashboard.css";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useNavigate } from "react-router-dom";
 
 export default function Userdashboard(props) {
   const [user, setUser] = useState({ username: "", password: "" });
   const [details, setDetails] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
+      const toastId = toast.loading("Fetching details, please wait...", {
+        position: "top-center",
+      });
+      setLoading(true);
       try {
-        const toastId = toast.loading("Fetching details, please wait...", {
-          position: "top-center",
-        });
         const response = await axios.get(`${props.api}/detail`, {
           withCredentials: true,
         });
@@ -22,9 +25,16 @@ export default function Userdashboard(props) {
         toast.dismiss(toastId);
         toast.info("Details fetch successfully", {
           position: "top-center",
+          autoClose: 2000,
         });
+        setLoading(false);
       } catch (error) {
-        console.error("Error fetching user details:", error);
+        toast.dismiss(toastId);
+        toast.error("Failed to fetch details. Please try again!", {
+          position: "top-center",
+          autoClose: 2000,
+        });
+        setLoading(false);
       }
     };
     fetchData();
@@ -111,9 +121,29 @@ export default function Userdashboard(props) {
     }
   }, [details.amount]);
 
+  const navigate = useNavigate();
+
+  const logout = async () => {
+    try {
+      await axios.post(
+        `${props.api}/userlogout`,
+        {},
+        { withCredentials: true }
+      );
+
+      toast.success("Logged out successfully!", { position: "top-center" });
+      navigate("/");
+      window.location.reload();
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast.error("Error logging out!", { position: "top-center" });
+    }
+  };
+
   return (
     <div className="user-dashboard">
-      <div className="container7">
+      {loading && <div className="loading-overlay">Loading...</div>}
+      <div className={`container7 ${loading ? "disabled" : ""}`}>
         <br />
         <h1 className="dash-mainhead">{`WELCOME ${details.name}`}</h1>
         <div className="user-container">
@@ -125,7 +155,7 @@ export default function Userdashboard(props) {
               <div className="accInfo1">
                 <h3>Check Transaction History</h3>
                 <NavLink to="/usertransaction">
-                  <Button variant="outlined" id="accbtn">
+                  <Button variant="contained" id="accbtn" color="primary">
                     Click here
                   </Button>
                 </NavLink>
@@ -133,15 +163,7 @@ export default function Userdashboard(props) {
               <div className="accInfo1">
                 <h3>Update Details</h3>
                 <NavLink to="/updtdetail">
-                  <Button variant="outlined" id="accbtn">
-                    Click here
-                  </Button>
-                </NavLink>
-              </div>
-              <div className="accInfo1">
-                <h3>Change Password</h3>
-                <NavLink to="/passchg">
-                  <Button variant="outlined" id="accbtn">
+                  <Button variant="contained" id="accbtn" color="primary">
                     Click here
                   </Button>
                 </NavLink>
@@ -152,7 +174,7 @@ export default function Userdashboard(props) {
             <ObjectDisplay obj={details} />
           </div>
         </div>
-        <Button variant="outlined" id="homebtn" href="/">
+        <Button variant="outlined" id="homebtn" onClick={logout}>
           Logout
         </Button>
       </div>
