@@ -27,7 +27,9 @@ export default function Detail(props) {
     });
     const { username, password } = user;
     await axios
-      .post(`${props.api}/userdetail`, user)
+      .post(`${props.api}/userdetail`, user, {
+        withCredentials: true,
+      })
       .then((res) => {
         if (res.data === "InvalidU") {
           toast.dismiss(toastId);
@@ -48,7 +50,12 @@ export default function Detail(props) {
           });
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast.dismiss(toastId);
+        toast.error("Something went wrong", {
+          position: "top-center",
+        });
+      });
 
     setUser({ username: "", password: "" });
   };
@@ -62,13 +69,21 @@ export default function Detail(props) {
   function ObjectDisplay({ obj }) {
     return (
       <div className="info">
-        <h1 className="mainhead">Your Details!</h1>
+        <h1 className="mainhead">Details!</h1>
         <br />
         <div className="detail-container">
-            <div className="image-signature">
-                <img src={obj.image} alt="Image" style={{height:"200px", width:"200px"}}/>
-                <img src={obj.signature} alt="signature" style={{height:"40px", width:"200px"}}/>
-            </div>
+          <div className="image-signature">
+            <img
+              src={obj.image}
+              alt="Image"
+              style={{ height: "200px", width: "200px" }}
+            />
+            <img
+              src={obj.signature}
+              alt="signature"
+              style={{ height: "40px", width: "200px" }}
+            />
+          </div>
           <ul>
             <li>
               <strong>Name: </strong> {obj.name}
@@ -162,13 +177,6 @@ export default function Detail(props) {
           <hr />
         </form>
 
-        <Button
-          variant="outlined"
-          id="homebtn"
-          href="/"
-        >
-          Logout
-        </Button>
         <NavLink to="/admdashboard">
           <Button variant="outlined" id="homebtn">
             Go to main dashboard
