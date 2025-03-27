@@ -1,203 +1,464 @@
-import React, { useState, useEffect } from "react";
+import * as React from "react";
 import axios from "axios";
+import "../../public/CSS/DetaiForm.css";
+import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
-import { NavLink } from "react-router-dom";
-import Button from '@mui/material/Button';
+import Button from "@mui/material/Button";
 
-const Users = (props) => {
-  const [users, setUsers] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [expandedUserId, setExpandedUserId] = useState(null);
+export default function userform(props) {
+  let [user, setUser] = useState({
+    name: "",
+    fname: "",
+    dob: "",
+    email: "",
+    contact: "",
+    aadhaar: "",
+    pan: "",
+    username: "",
+    password: "",
+    image: null,
+    signature: null,
+    acctype: "",
+    amount: 0,
+    add: "",
+  });
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      const toastId = toast.loading("Fetching User details, please wait...", {
+  const handleInputs = (e) => {
+    const { name, value, files } = e.target;
+    if (name === "image" || name === "signature") {
+      setUser({ ...user, [name]: files[0] });
+    } else {
+      setUser({ ...user, [name]: value });
+    }
+  };
+
+  const navigate = useNavigate();
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    // Ensure required fields are filled
+    if (!user.image || !user.signature) {
+      return toast.warn("Image and Signature are required", {
+        position: "top-center",
+      });
+    }
+
+    const toastId = toast.loading("Submitting your details...", {
+      position: "top-center",
+    });
+
+    const formData = new FormData();
+    Object.keys(user).forEach((key) => {
+      if (user[key]) {
+        formData.append(key, user[key]);
+      }
+    });
+
+    try {
+      const res = await axios.post(`${props.api}/form`, formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      if (res.status === 201) {
+        toast.dismiss(toastId);
+        toast.success(res.data.message, { position: "top-center" });
+
+        // Reset form
+        setUser({
+          name: "",
+          fname: "",
+          dob: "",
+          email: "",
+          contact: "",
+          aadhaar: "",
+          pan: "",
+          username: "",
+          password: "",
+          acctype: "",
+          amount: "",
+          add: "",
+          image: null,
+          signature: null,
+        });
+
+        // Redirect to another page if needed
+        setTimeout(() => navigate("/"), 2000);
+      } else {
+        toast.dismiss(toastId);
+        toast.warn(res.data.message, { position: "top-center" });
+      }
+    } catch (err) {
+      toast.dismiss(toastId);
+
+      if (err.response && err.response.data.message) {
+        toast.error(err.response.data.message, { position: "top-center" });
+      } else {
+        toast.error("Server Error: " + err.message, { position: "top-center" });
+      }
+    }
+  };
+
+  const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const handlePasswordVisibilityToggle = () => {
+    setPasswordVisible(!passwordVisible);
+  };
+
+  const [OTP, setOTP] = useState("");
+  const [isotpsend, setIsotpsend] = useState(false);
+  const [isVerify, setIsVerify] = useState(false);
+
+  const sendOtp = async () => {
+    const { email } = user;
+    if (!email) {
+      toast.error("Enter Email Id", { position: "top-center" });
+      return;
+    }
+    try {
+      const toastId = toast.loading("Sending OTP, please wait...", {
         position: "top-center",
       });
 
-      try {
-        const response = await axios.get(`${props.api}/allusers`);
-        const { users } = response.data;
-        setUsers(users);
-        toast.dismiss(toastId);
-        toast.success("User data fetched successfully", {
-          position: "top-center",
+      const response = await axios.post(`${props.api}/verifyemail`, { email });
+      setOTP(response.data.otp);
+      setIsotpsend(true);
+      if (response.status === 200) {
+        toast.update(toastId, {
+          render: "OTP sent successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
         });
-      } catch (error) {
-        toast.dismiss(toastId);
-        toast.error("Failed to fetch data", {
-          position: "top-center",
+      } else {
+        toast.update(toastId, {
+          render: response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
         });
-        console.error("Error fetching users:", error);
       }
-    };
-
-    fetchUsers();
-  }, [props.api]);
-
-  const toggleDetails = (userId) => {
-    setExpandedUserId(expandedUserId === userId ? null : userId);
+    } catch (error) {
+      toast.error("Something went wrong!", { position: "top-center" });
+    }
   };
 
-  const handleSearch = (event) => {
-    setSearchTerm(event.target.value);
+  const verifyOTP = () => {
+    if (user.otp == OTP) {
+      toast.success("Email Verification Success", { position: "top-center" });
+      setIsVerify(true);
+    } else {
+      toast.error("Invalid OTP", { position: "top-center" });
+    }
   };
-
-  const filteredUsers = users.filter((user) =>
-    user.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
 
   return (
-    <div className="container8">
-      <h1 className="mainhead">Users Detail</h1>
+    <div className="container6">
+      <div className="form">
+        <div className="heading">
+          <h2>Fill Form For Account Opening</h2>
+        </div>
+        <br />
+        <form onSubmit={handleSubmit} className="formInfo">
+          <div className="mb-3">
+            <label for="exampleFormControlInput1" class="form-label">
+              Name:{" "}
+            </label>
+            <input
+              type="name"
+              name="name"
+              placeholder="Enter name"
+              class="form-control form1"
+              id="exampleFormControlInput1"
+              autoComplete="off"
+              value={user.name}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput2" class="form-label">
+              Father name:{" "}
+            </label>
+            <input
+              type="name"
+              name="fname"
+              placeholder="Enter Father name"
+              class="form-control form1"
+              id="exampleFormControlInput2"
+              autoComplete="off"
+              value={user.fname}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput3" class="form-label">
+              DOB:{" "}
+            </label>
+            <input
+              type="date"
+              name="dob"
+              placeholder="Enter DOB"
+              class="form-control form1"
+              id="exampleFormControlInput3"
+              autoComplete="off"
+              value={user.dob}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput4" class="form-label">
+              Email:{" "}
+            </label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Enter Email"
+              class="form-control form1"
+              id="exampleFormControlInput4"
+              autoComplete="off"
+              value={user.email}
+              onChange={handleInputs}
+              disabled={isotpsend}
+              required
+            />
+          </div>
+          {!isVerify && (
+            <div className="otp-container">
+              {isotpsend && (
+                <input
+                  className="otp-input"
+                  type="text"
+                  name="otp"
+                  value={user.otp}
+                  onChange={handleInputs}
+                  placeholder="Enter OTP"
+                />
+              )}
+              <Button
+                variant="contained"
+                className="otp-button"
+                onClick={isotpsend ? verifyOTP : sendOtp}
+              >
+                {isotpsend ? "Verify OTP" : "Verify Email ID"}
+              </Button>
+            </div>
+          )}
+          <div className="mb-3">
+            <label for="exampleFormControlInput5" class="form-label">
+              Contact No.{" "}
+            </label>
+            <input
+              type="tel"
+              name="contact"
+              placeholder="Enter Contact no."
+              class="form-control form1"
+              id="exampleFormControlInput5"
+              pattern="\d{10}"
+              maxlength="10"
+              autoComplete="off"
+              value={user.contact}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput6" class="form-label">
+              Aadhaar No.{" "}
+            </label>
+            <input
+              type="text"
+              name="aadhaar"
+              placeholder="Enter Aadhaar no."
+              class="form-control form1"
+              id="exampleFormControlInput6"
+              maxlength="16"
+              autoComplete="off"
+              value={user.aadhaar}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput7" class="form-label">
+              PAN No.{" "}
+            </label>
+            <input
+              type="text"
+              name="pan"
+              placeholder="Enter PAN no."
+              class="form-control form1"
+              id="exampleFormControlInput7"
+              autoComplete="off"
+              value={user.pan}
+              onChange={handleInputs}
+            />
+          </div>
+          <div className="checkBox">
+            <h6 className="form-label">Gender: </h6>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                id="flexRadioDefault1"
+                checked
+              />
+              <label class="form-check-label">Male</label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="radio"
+                name="flexRadioDefault"
+                id="flexRadioDefault2"
+              />
+              <label class="form-check-label">Female</label>
+            </div>
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput8" class="form-label">
+              UserName:{" "}
+            </label>
+            <input
+              type="text"
+              name="username"
+              placeholder="Enter Username"
+              class="form-control form1"
+              id="exampleFormControlInput8"
+              autoComplete="off"
+              value={user.username}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput9" class="form-label">
+              Password:{" "}
+            </label>
+            <div className="pass">
+              <input
+                type={passwordVisible ? "text" : "password"}
+                name="password"
+                placeholder="Enter Password"
+                class="form-control form1"
+                id="exampleFormControlInput9"
+                autoComplete="off"
+                value={user.password}
+                onChange={handleInputs}
+                required
+              />
+              <button
+                type="button"
+                onClick={handlePasswordVisibilityToggle}
+                className="eye-icon3 cursor-pointer"
+              >
+                {passwordVisible ? <Eye /> : <EyeOff />}
+              </button>
+            </div>
+          </div>
 
-      <div style={{ margin: "20px 0px" }}>
-        <input
-          type="text"
-          placeholder="Search by name..."
-          value={searchTerm}
-          onChange={handleSearch}
-          style={{
-            padding: "10px",
-            width: "90%",
-            margin: "0 auto",
-            display: "block",
-            borderRadius: "5px",
-            border: "1px solid #ccc",
-          }}
-        />
+          <div className="mb-3">
+            <label htmlFor="exampleFormControlInput10" className="form-label">
+              Upload Photo
+            </label>
+            <input
+              className="form-control form1"
+              type="file"
+              id="exampleFormControlInput10"
+              name="image"
+              onChange={handleInputs}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label htmlFor="exampleFormControlInput11" className="form-label">
+              Upload Signature
+            </label>
+            <input
+              className="form-control form1"
+              type="file"
+              id="exampleFormControlInput11"
+              name="signature"
+              onChange={handleInputs}
+              required
+            />
+          </div>
+
+          <div className="mb-3">
+            <label for="exampleFormControlInput12" class="form-label">
+              Type of Account{" "}
+            </label>
+            <select
+              class="form-select form1"
+              aria-label="Default select example"
+              id="exampleFormControlInput12"
+              name="acctype"
+              value={user.acctype}
+              onChange={handleInputs}
+              required
+            >
+              <option selected style={{ fontWeight: "bolder" }}>
+                Select one
+              </option>
+              <option value="Saving account">Saving account</option>
+              <option value="Salary account">Salary account</option>
+              <option value="Fixes deposite account">
+                Fixed deposit account{" "}
+              </option>
+              <option value="Recurring deposite account">
+                Recurring deposit account{" "}
+              </option>
+              <option value="NRI account">NRI account </option>
+            </select>
+          </div>
+
+          <div className="mb-3">
+            <label for="exampleFormControlInput6" class="form-label">
+              Enter amount:{" "}
+            </label>
+            <input
+              class="form-control form1"
+              type="text"
+              placeholder="You cannot enter amount"
+              aria-label="Disabled input example"
+              disabled
+            />
+          </div>
+          <div className="mb-3">
+            <label for="exampleFormControlInput14" class="form-label">
+              Address:{" "}
+            </label>
+            <input
+              type="text"
+              name="add"
+              placeholder="Enter Address"
+              class="form-control form1"
+              id="exampleFormControlInput14"
+              autoComplete="off"
+              value={user.add}
+              onChange={handleInputs}
+              required
+            />
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary subBtn"
+            disabled={!isVerify}
+          >
+            Submit
+          </button>
+          {!isVerify && <p>Verify email to enable submit button</p>}
+        </form>
       </div>
-
-      {/* Check if there are no users */}
-      {filteredUsers.length === 0 ? (
-        <div style={{ textAlign: "center", marginTop: "20px" }}>
-          <h2>No users found</h2>
-        </div>
-      ) : (
-        <div style={{ width: "90%", margin: "2vh auto", overflowX: "auto" }}>
-          <table border="3" style={{ width: "100%", textAlign: "center" }}>
-            <thead>
-              <tr>
-                <th>S.No.</th>
-                <th>Name</th>
-                <th>Username</th>
-                <th>Check Details</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredUsers.map((user, index) => (
-                <React.Fragment key={user._id}>
-                  <tr>
-                    <td data-label="S.No">{index + 1}.</td>
-                    <td data-label="Name">{user.name}</td>
-                    <td data-label="Username">{user.username}</td>
-                    <td data-label="Check Details">
-                      <button
-                        className="form-select"
-                        onClick={() => toggleDetails(user._id)}
-                      >
-                        {expandedUserId === user._id
-                          ? "Hide Details"
-                          : "Show Details"}
-                      </button>
-                    </td>
-                  </tr>
-
-                  {expandedUserId === user._id && (
-                    <tr>
-                      <td colSpan="4">
-                        <div
-                          style={{
-                            padding: "10px",
-                            display: "flex",
-                            flexDirection: "column",
-                            textAlign: "left",
-                          }}
-                        >
-                          <img
-                            src={`http://localhost:8000/${user.image}`}
-                            alt="Image"
-                            style={{
-                              height: "200px",
-                              width: "200px",
-                              margin: "10px 0px",
-                            }}
-                          />
-                          <img
-                            src={`http://localhost:8000/${user.signature}`}
-                            alt="signature"
-                            style={{
-                              height: "40px",
-                              width: "200px",
-                              margin: "10px 0px",
-                            }}
-                          />
-                          <ul>
-                            <li>
-                              <strong>Name: </strong> {user.name}
-                            </li>
-                            <li>
-                              <strong>Father Name: </strong> {user.fname}
-                            </li>
-                            <li>
-                              <strong>DOB: </strong> {user.dob}
-                            </li>
-                            <li>
-                              <strong>Email ID: </strong> {user.email}
-                            </li>
-                            <li>
-                              <strong>Contact No.: </strong> {user.contact}
-                            </li>
-                            <li>
-                              <strong>Aadhaar No.: </strong> {user.aadhaar}
-                            </li>
-                            <li>
-                              <strong>PAN No.: </strong> {user.pan}
-                            </li>
-                            <li>
-                              <strong>Username.: </strong> {user.username}
-                            </li>
-                            <li>
-                              <strong>Account Type: </strong> {user.acctype}
-                            </li>
-                            <li>
-                              <strong>Balance: </strong> {user.amount}
-                            </li>
-                            <li>
-                              <strong>Address: </strong> {user.add}
-                            </li>
-                          </ul>
-                        </div>
-                      </td>
-                    </tr>
-                  )}
-
-                  {/* Horizontal bold line */}
-                  <tr>
-                    <td colSpan="4">
-                      <hr
-                        style={{
-                          borderTop: "3px solid black",
-                          margin: "10px 0",
-                        }}
-                      />
-                    </td>
-                  </tr>
-                </React.Fragment>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      <br />
-      <NavLink to="/admdashboard">
-        <Button variant="outlined" id="homebtn">
-          Go to main dashboard
-        </Button>
-      </NavLink>
     </div>
   );
-};
-
-export default Users;
+}
