@@ -29,7 +29,9 @@ export default function Transaction(props) {
     });
     const { username, password } = user;
     await axios
-      .post(`${props.api}/transaction`, user)
+      .post(`${props.api}/transaction`, user, {
+        withCredentials: true,
+      })
       .then((res) => {
         if (res.data === "InvalidU") {
           toast.dismiss(toastId);
@@ -50,7 +52,12 @@ export default function Transaction(props) {
           });
         }
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast.dismiss(toastId);
+        toast.error("Something went wrong", {
+          position: "top-center",
+        });
+      });
   };
 
   const send = async (e) => {
@@ -154,9 +161,6 @@ export default function Transaction(props) {
           <hr />
         </form>
 
-        <Button variant="outlined" id="homebtn" href="/">
-          Logout
-        </Button>
         <NavLink to="/admdashboard">
           <Button variant="outlined" id="homebtn">
             Go to main dashboard
