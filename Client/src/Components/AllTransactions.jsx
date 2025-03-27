@@ -19,7 +19,9 @@ const AllTransactions = (props) => {
       });
 
       try {
-        const response = await axios.get(`${props.api}/alltransactions`);
+        const response = await axios.get(`${props.api}/alltransactions`,{
+          withCredentials: true,
+        });
         setTransactions(response.data);
         toast.dismiss(toastId);
         toast.success("Transactions fetched successfully", {
