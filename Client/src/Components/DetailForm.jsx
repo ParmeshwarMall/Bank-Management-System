@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "react-toastify";
+import Button from "@mui/material/Button";
 
 export default function DetailForm(props) {
   let [user, setUser] = useState({
@@ -12,6 +13,7 @@ export default function DetailForm(props) {
     fname: "",
     dob: "",
     email: "",
+    otp: "",
     contact: "",
     aadhaar: "",
     pan: "",
@@ -55,7 +57,6 @@ export default function DetailForm(props) {
       position: "top-center",
     });
 
-    // ✅ Create FormData for File Upload
     const formData = new FormData();
     Object.keys(user).forEach((key) => {
       if (user[key]) {
@@ -70,7 +71,6 @@ export default function DetailForm(props) {
         },
       });
 
-      // ✅ Handle different responses properly
       if (res.status === 201) {
         toast.dismiss(toastId);
         toast.success(res.data.message, { position: "top-center" });
@@ -92,7 +92,6 @@ export default function DetailForm(props) {
           image: null,
           signature: null,
         });
-
       } else {
         toast.dismiss(toastId);
         toast.warn(res.data.message, { position: "top-center" });
@@ -110,6 +109,53 @@ export default function DetailForm(props) {
 
   const handlePasswordVisibilityToggle = () => {
     setPasswordVisible(!passwordVisible);
+  };
+
+  const [OTP, setOTP] = useState("");
+  const [isotpsend, setIsotpsend] = useState(false);
+  const [isVerify, setIsVerify] = useState(false);
+
+  const sendOtp = async () => {
+    const { email } = user;
+    if (!email) {
+      toast.error("Enter Email Id", { position: "top-center" });
+      return;
+    }
+    try {
+      const toastId = toast.loading("Sending OTP, please wait...", {
+        position: "top-center",
+      });
+
+      const response = await axios.post(`${props.api}/verifyemail`, { email });
+      setOTP(response.data.otp);
+      setIsotpsend(true);
+      if (response.status === 200) {
+        toast.update(toastId, {
+          render: "OTP sent successfully!",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      } else {
+        toast.update(toastId, {
+          render: response.data.message,
+          type: "error",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      }
+    } catch (error) {
+      toast.error("Something went wrong!", { position: "top-center" });
+    }
+  };
+
+  const verifyOTP = () => {
+    if (user.otp == OTP) {
+      toast.success("Email Verification Success", { position: "top-center" });
+      setIsVerify(true);
+    } else {
+      toast.error("Invalid OTP", { position: "top-center" });
+    }
   };
 
   return (
@@ -181,9 +227,31 @@ export default function DetailForm(props) {
               autoComplete="off"
               value={user.email}
               onChange={handleInputs}
+              disabled={isotpsend}
               required
             />
           </div>
+          {!isVerify && (
+            <div className="otp-container">
+              {isotpsend && (
+                <input
+                  className="otp-input"
+                  type="text"
+                  name="otp"
+                  value={user.otp}
+                  onChange={handleInputs}
+                  placeholder="Enter OTP"
+                />
+              )}
+              <Button
+                variant="contained"
+                className="otp-button"
+                onClick={isotpsend ? verifyOTP : sendOtp}
+              >
+                {isotpsend ? "Verify OTP" : "Verify Email ID"}
+              </Button>
+            </div>
+          )}
           <div className="mb-3">
             <label for="exampleFormControlInput5" class="form-label">
               Contact No.{" "}
@@ -389,9 +457,14 @@ export default function DetailForm(props) {
             />
           </div>
 
-          <button type="submit" class="btn btn-primary subBtn">
+          <button
+            type="submit"
+            className="btn btn-primary subBtn"
+            disabled={!isVerify}
+          >
             Submit
           </button>
+          {!isVerify && <p>Verify email to enable submit button</p>}
         </form>
       </div>
     </div>
