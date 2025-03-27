@@ -49,7 +49,12 @@ export default function UserTransaction(props) {
           position: "top-center",
         });
       })
-      .catch((err) => console.log(err));
+      .catch((err) => {
+        toast.dismiss(toastId);
+        toast.error("Something went wrong", {
+          position: "top-center",
+        });
+      });
   };
 
   const handlePrint = () => {
@@ -129,9 +134,6 @@ export default function UserTransaction(props) {
           </Button>
         </div>
       </div>
-      <Button variant="outlined" id="homebtn" href="/">
-        Logout
-      </Button>
       <NavLink to="/userdashboard">
         <Button variant="outlined" id="homebtn">
           Go to main dashboard
