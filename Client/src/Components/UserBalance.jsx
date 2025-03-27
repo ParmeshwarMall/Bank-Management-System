@@ -25,7 +25,9 @@ export default function UserBalance(props) {
             position: "top-center",
           });
         const {username,password}=user;
-        await axios.post(`${props.api}/balance`,user)
+        await axios.post(`${props.api}/balance`,user,{
+            withCredentials: true,
+          })
         .then(res=>{
             toast.dismiss(toastId);
             toast.info(res.data, {
@@ -69,7 +71,6 @@ export default function UserBalance(props) {
                 <hr />
             </form>
 
-            <Button variant="outlined" id="homebtn" href="/" style={{marginLeft:'0rem'}}>Logout</Button>
             <NavLink to="/userdashboard" ><Button variant="outlined" id="homebtn" >Go to main dashboard</Button></NavLink>
         </div>
     )
