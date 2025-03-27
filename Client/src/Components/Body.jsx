@@ -23,6 +23,11 @@ export default function Body(props) {
   });
   let name, value;
 
+  let [isLog, setIsLog] = useState(false);
+  const [resotp, setResotp] = useState();
+  const [showOtpPopup, setShowOtpPopup] = useState(false);
+  const [otp, setOtp] = useState();
+
   const handleInputs = (e) => {
     e.preventDefault;
     name = e.target.name;
@@ -35,37 +40,97 @@ export default function Body(props) {
 
   const adsubmit = async (event) => {
     event.preventDefault();
+    setIsLog(true);
     const toastId = toast.loading("Logging in, please wait...", {
       position: "top-center",
     });
     try {
-      const { id, password, username, userpassword } = user;
+      const res = await axios.post(`${props.api}/admin`, user, {
+        withCredentials: true,
+      });
 
-      if (id == "admin" && password == 1234) {
+      toast.dismiss(toastId);
+
+      if (res.data.message === "Login successful") {
         isAdLog = true;
-        toast.dismiss(toastId);
+
         toast.success("Login Successfully", {
           position: "top-center",
+          autoClose: 2000,
         });
+
         navigate("/admdashboard");
       } else {
-        toast.dismiss(toastId);
+        setIsLog(false);
         toast.error("Invalid Id or Password!", {
           position: "top-center",
+          autoClose: 2000,
         });
       }
     } catch (e) {
-      console.log(e);
+      setIsLog(false);
+      toast.dismiss(toastId);
+      toast.error("Something went wrong!", {
+        position: "top-center",
+        autoClose: 2000,
+      });
+    }
+  };
+
+  const otpSend = async (event) => {
+    event.preventDefault();
+    const toastId = toast.loading("Sending OTP, please wait...", {
+      position: "top-center",
+    });
+
+    try {
+      const res = await axios.post(`${props.api}/userotp`, user);
+
+      if (res.data.message === "OTP sent successfully") {
+        setResotp(res.data.otp);
+        setShowOtpPopup(true);
+        toast.update(toastId, {
+          render: "OTP sent successfully on your registered email id",
+          type: "success",
+          isLoading: false,
+          autoClose: 3000,
+        });
+      } else {
+        toast.update(toastId, {
+          render: res.data || "Failed to send OTP",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+      }
+    } catch (err) {
+      toast.update(toastId, {
+        render: "Something went wrong",
+        type: "error",
+        isLoading: false,
+        autoClose: 2000,
+      });
+      console.error("OTP Error:", err);
     }
   };
 
   const ussubmit = async (event) => {
     event.preventDefault();
+    setIsLog(true);
     const toastId = toast.loading("Logging in, please wait...", {
       position: "top-center",
     });
 
     try {
+      if (otp != resotp) {
+        toast.update(toastId, {
+          render: "Invalid OTP",
+          type: "error",
+          isLoading: false,
+          autoClose: 2000,
+        });
+        return;
+      }
       const res = await axios.post(`${props.api}/`, user, {
         withCredentials: true,
       });
@@ -73,14 +138,19 @@ export default function Body(props) {
       toast.dismiss(toastId);
       if (res.data === "exist") {
         isUserLog = true;
-        toast.success("Login Successfully", { position: "top-center" });
+        toast.success("Login Successfully", {
+          position: "top-center",
+          autoClose: 2000,
+        });
         navigate("/userdashboard");
       } else {
+        setIsLog(false);
         toast.error(res.data, { position: "top-center" });
       }
     } catch (err) {
+      setIsLog(false);
       toast.dismiss(toastId);
-      toast.error(err.message, { position: "top-center" });
+      toast.error(err.message, { position: "top-center", autoClose: 2000 });
       console.log(err);
     }
   };
@@ -165,7 +235,11 @@ export default function Body(props) {
               />
             </div>
             <br />
-            <button type="submit" class="btn btn-primary" disabled={!capVal1}>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              disabled={!capVal1 || isLog}
+            >
               Login
             </button>
           </form>
@@ -175,7 +249,7 @@ export default function Body(props) {
           <h2 className="heading" style={{ fontSize: "25px" }}>
             For User Only
           </h2>
-          <form onSubmit={ussubmit}>
+          <form onSubmit={otpSend}>
             <div class="mb-3">
               <label for="username" class="form-label">
                 Username:{" "}
@@ -226,11 +300,33 @@ export default function Body(props) {
               />
             </div>
             <br />
-            <button type="submit" class="btn btn-primary" disabled={!capVal2}>
+            <button
+              type="submit"
+              class="btn btn-primary"
+              disabled={!capVal2 || isLog}
+            >
               Login
             </button>
           </form>
         </div>
+      </div>
+
+      <div>
+        {showOtpPopup && (
+          <div className="popup">
+            <div className="popup-content">
+              <h2>Enter OTP</h2>
+              <input
+                type="text"
+                value={otp}
+                onChange={(e) => setOtp(e.target.value)}
+                placeholder="Enter OTP"
+              />
+              <button onClick={ussubmit}>Submit OTP</button>
+              <button onClick={() => setShowOtpPopup(false)}>Close</button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="userform">
