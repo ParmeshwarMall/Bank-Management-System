@@ -119,7 +119,7 @@ const authMiddleware = (req, res, next) => {
 
 app.post("/admin", (req, res) => {
   const { id, password } = req.body;
-  if (id === "admin" && password === "1234") {
+  if (id === "abc" && password === "xyz") {
     const token = jwt.sign({ id: "admin" }, secretKey, { expiresIn: "1h" });
 
     res.cookie("adminToken", token, {
