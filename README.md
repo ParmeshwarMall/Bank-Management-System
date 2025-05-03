@@ -23,10 +23,12 @@ The Bank Management System is a console-based (or web-based) application that al
 ## Screenshots  
 
 ### Home Page  
-![screencapture-bharat-bank-netlify-app-2025-02-19-21_52_31](https://github.com/user-attachments/assets/bc04a6a3-e52b-4b3f-a62c-921b23d1518a)  
+![image](https://github.com/user-attachments/assets/70425b34-3ffb-4f3a-9871-c1a4774cbce9)  
+
 
 ### Admin Dashboard
-![screencapture-bharat-bank-netlify-app-admdashboard-2025-02-19-21_55_47](https://github.com/user-attachments/assets/78cf04cd-353a-4fdc-87b9-197619d10e2e)
+![screencapture-bharat-bank-netlify-app-admdashboard-2025-05-03-11_56_34](https://github.com/user-attachments/assets/e21373aa-2830-439c-b5ea-e98de4c499c0)  
+
 
 ## Usage:
 * Login to your account.  
