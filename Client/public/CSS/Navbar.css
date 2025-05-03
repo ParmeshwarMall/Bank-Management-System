@@ -1,0 +1,183 @@
+body{
+    padding: 0;
+    margin: 0;
+    transition: transform 0.2s ease;
+}
+.navBar{
+    background-color: aquamarine;
+    display: flex;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    width: 100%;
+    left:0;
+    z-index: 1000;
+    
+}
+#btn{
+    font-weight: bold;
+    margin: 10px;
+    border-radius: 20px;
+    color: black;
+    border: 2px solid black;
+    background-color: rgb(132, 237, 226);
+}
+.nav-items
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.item{
+    list-style: none;
+}
+.items{
+    display: flex;
+    align-items: center;
+}
+#btn:hover{
+    transform: scale(1.1);
+    transition: all .3s linear;
+    background-color: antiquewhite;
+}
+
+.logo-poster{
+    float: left;
+    height: 40px;
+    width: 250px;
+    margin: 10px 0 0 10px;
+}
+.logoposter2{
+    height: 70px;
+    width: 80px;
+}
+.main-body-cont{
+    transition: transform 0.4s ease;
+}
+.container9{
+    background-color: rgb(220, 235, 230);
+    padding: 20px;
+    transition: transform 0.4s ease;
+}
+
+.container10{
+    background-color: rgb(220, 235, 230);
+    padding: 20px;
+    transition: transform 0.4s ease;
+}
+.serhead{
+    display: flex;
+    justify-content: center;
+}
+.conthead{
+    display: flex;
+    justify-content: center;
+}
+.container11{
+    background-color:rgb(220, 235, 230);
+    height: 90vh;
+    padding: 20px;
+    transition: transform 0.4s ease;
+}
+
+.logo3{
+    
+    height: 50px;
+}
+
+.fa-snowflake{
+    transition: all linear;
+    animation: rot 2s linear infinite;
+    color:black;
+    scale: 1.5;
+}
+@keyframes rot {
+    0%{
+        transform: rotate(0deg);
+    }
+    100%{
+        transform: rotate(360deg);
+    }
+}
+.nav-logo{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.mobile-menu-icon {
+    display: none;
+    cursor: pointer;
+    color: rgb(246, 8, 8);
+}
+
+@media (max-width:768px)
+{
+    .nav-items {
+        display: none;
+        flex-direction: column;
+        width: 100%;
+        position: absolute;
+        top: 45px;
+        left: 0;
+        background-color: #7bb49f;
+        text-align: center;
+        transition: all 0.3s ease-in-out;
+        padding: 20px;
+    }
+
+    .nav-items.active {
+        display: flex;
+    }
+
+    .navBar {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .mobile-menu-icon {
+        display: block;
+        margin-right: 1.8rem;
+        scale: 1.3;
+    }
+
+    .logo-poster {
+        height: 20px;
+        width: 100px;
+        margin: 2px 0 0 10px;
+    }
+
+    .logoposter2 {
+        height: 20px;
+        width: 50px;
+    }
+
+    .logo3 {
+        height: 20px;
+        width: 50px;
+    }
+    .container9{
+        padding: 20px;
+    }
+    .container10{
+        padding: 20px;
+    }
+    .container11{
+        padding: 20px;
+    }
+    .mobile-menu-open .main-body-cont {
+        transform: translateY(290px); 
+    }
+    .mobile-menu-open .container9 {
+        transform: translateY(290px); 
+    }
+    .mobile-menu-open .container10{
+        transform: translateY(290px); 
+    }
+    .mobile-menu-open .container11 {
+        transform: translateY(290px); 
+    }
+
+}
+
