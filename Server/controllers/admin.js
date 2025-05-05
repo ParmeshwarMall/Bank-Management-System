@@ -9,7 +9,7 @@ import otp_email_template from "./otpSendTemplate.js";
 
 export const login = async (req, res) => {
   const { id, password } = req.body;
-  if (id === "admin" && password === "1234") {
+  if (id === "123" && password === "123") {
     const token = jwt.sign({ id: "admin" }, process.env.SECRET_KEY, {
       expiresIn: "1h",
     });
